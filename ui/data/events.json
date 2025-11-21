@@ -1,0 +1,299 @@
+[
+    {
+        "id": 1,
+        "title": "Global Innovation Night",
+        "date": "2025-11-25",
+        "time": "18:00",
+        "endTime": "21:00",
+        "location": "Memorial Union, Room 235",
+        "locationType": "In-Person",
+        "campus": "Tempe",
+        "description": "Join us for an evening of innovation and creativity! Showcase your projects, meet fellow innovators, and network with industry professionals.",
+        "hostGroup": "Entrepreneurship Club",
+        "hostGroupId": 7,
+        "category": [
+            "Social",
+            "Networking"
+        ],
+        "eventType": "Workshop",
+        "tags": [
+            "Innovation",
+            "Networking",
+            "Technology"
+        ],
+        "image": "images/events/innovation-night.jpg",
+        "isFree": true,
+        "spotsTotal": 100,
+        "spotsLeft": 45,
+        "attendees": 55,
+        "rsvpRequired": true
+    },
+    {
+        "id": 2,
+        "title": "Book Club for International Students",
+        "date": "2025-11-22",
+        "time": "15:00",
+        "endTime": "16:30",
+        "location": "Hayden Library, Study Room 4",
+        "locationType": "In-Person",
+        "campus": "Tempe",
+        "description": "Monthly book club meeting to discuss international literature and share cultural perspectives.",
+        "hostGroup": "Indian Students' Association at ASU",
+        "hostGroupId": 1,
+        "category": [
+            "Social",
+            "Cultural"
+        ],
+        "eventType": "Club Meeting",
+        "tags": [
+            "Reading",
+            "Culture",
+            "Discussion"
+        ],
+        "image": "images/events/book-club.jpg",
+        "isFree": true,
+        "spotsTotal": 25,
+        "spotsLeft": 8,
+        "attendees": 17,
+        "rsvpRequired": true
+    },
+    {
+        "id": 3,
+        "title": "The Poly Games - Annual Sports Tournament",
+        "date": "2025-11-28",
+        "time": "09:00",
+        "endTime": "17:00",
+        "location": "Polytechnic Campus Recreation Center",
+        "locationType": "In-Person",
+        "campus": "Polytechnic",
+        "description": "Annual sports tournament featuring basketball, volleyball, soccer, and more! Form teams and compete for prizes.",
+        "hostGroup": "ASU Kendo Club",
+        "hostGroupId": 5,
+        "category": [
+            "Sports",
+            "Competition"
+        ],
+        "eventType": "Tournament",
+        "tags": [
+            "Sports",
+            "Competition",
+            "Team Building"
+        ],
+        "image": "images/events/poly-games.jpg",
+        "isFree": false,
+        "price": 10,
+        "spotsTotal": 200,
+        "spotsLeft": 120,
+        "attendees": 80,
+        "rsvpRequired": true
+    },
+    {
+        "id": 4,
+        "title": "Fall Career Fair 2025",
+        "date": "2025-12-01",
+        "time": "10:00",
+        "endTime": "16:00",
+        "location": "Sun Devil Stadium",
+        "locationType": "In-Person",
+        "campus": "Tempe",
+        "description": "Connect with top employers, explore career opportunities, and land your dream job or internship!",
+        "hostGroup": "Association of Latino Professionals For America",
+        "hostGroupId": 3,
+        "category": [
+            "Professional",
+            "Networking"
+        ],
+        "eventType": "Career Fair",
+        "tags": [
+            "Career",
+            "Jobs",
+            "Internships",
+            "Networking"
+        ],
+        "image": "images/events/career-fair.jpg",
+        "isFree": true,
+        "spotsTotal": 500,
+        "spotsLeft": 245,
+        "attendees": 255,
+        "rsvpRequired": false
+    },
+    {
+        "id": 5,
+        "title": "Cultural Festival - Taste of the World",
+        "date": "2025-12-05",
+        "time": "17:00",
+        "endTime": "21:00",
+        "location": "Tempe Campus - Old Main Lawn",
+        "locationType": "In-Person",
+        "campus": "Tempe",
+        "description": "Experience cultures from around the world through food, music, dance, and art. Free admission and food samples!",
+        "hostGroup": "BRASA at ASU",
+        "hostGroupId": 2,
+        "category": [
+            "Cultural",
+            "Social"
+        ],
+        "eventType": "Festival",
+        "tags": [
+            "Culture",
+            "Food",
+            "Music",
+            "Dance"
+        ],
+        "image": "images/events/cultural-festival.jpg",
+        "isFree": true,
+        "spotsTotal": 300,
+        "spotsLeft": 180,
+        "attendees": 120,
+        "rsvpRequired": false
+    },
+    {
+        "id": 6,
+        "title": "Finals Week Study Sessions",
+        "date": "2025-12-10",
+        "time": "19:00",
+        "endTime": "23:00",
+        "location": "Noble Library, 2nd Floor",
+        "locationType": "In-Person",
+        "campus": "Tempe",
+        "description": "Group study sessions with free coffee, snacks, and peer tutoring. All majors welcome!",
+        "hostGroup": "The Pre-Law Society",
+        "hostGroupId": 4,
+        "category": [
+            "Academic",
+            "Study"
+        ],
+        "eventType": "Study Session",
+        "tags": [
+            "Study",
+            "Finals",
+            "Tutoring"
+        ],
+        "image": "images/events/study-session.jpg",
+        "isFree": true,
+        "spotsTotal": 75,
+        "spotsLeft": 32,
+        "attendees": 43,
+        "rsvpRequired": true
+    },
+    {
+        "id": 7,
+        "title": "Women in Tech Panel Discussion",
+        "date": "2025-11-30",
+        "time": "18:30",
+        "endTime": "20:00",
+        "location": "Virtual - Zoom",
+        "locationType": "Virtual",
+        "campus": "Online",
+        "description": "Hear from successful women in technology about their career journeys, challenges, and advice for aspiring tech professionals.",
+        "hostGroup": "Women in Computer Science",
+        "hostGroupId": 6,
+        "category": [
+            "Professional",
+            "Panel"
+        ],
+        "eventType": "Panel Discussion",
+        "tags": [
+            "Technology",
+            "Women",
+            "Career",
+            "Inspiration"
+        ],
+        "image": "images/events/tech-panel.jpg",
+        "isFree": true,
+        "spotsTotal": 150,
+        "spotsLeft": 67,
+        "attendees": 83,
+        "rsvpRequired": true
+    },
+    {
+        "id": 8,
+        "title": "Startup Pitch Competition",
+        "date": "2025-12-08",
+        "time": "14:00",
+        "endTime": "18:00",
+        "location": "Venture Devils, Innovation Center",
+        "locationType": "In-Person",
+        "campus": "Tempe",
+        "description": "Present your startup idea to judges and compete for $5,000 in seed funding! Open to all ASU students.",
+        "hostGroup": "Entrepreneurship Club",
+        "hostGroupId": 7,
+        "category": [
+            "Competition",
+            "Professional"
+        ],
+        "eventType": "Competition",
+        "tags": [
+            "Startup",
+            "Pitch",
+            "Entrepreneurship",
+            "Funding"
+        ],
+        "image": "images/events/pitch-competition.jpg",
+        "isFree": true,
+        "spotsTotal": 50,
+        "spotsLeft": 15,
+        "attendees": 35,
+        "rsvpRequired": true
+    },
+    {
+        "id": 9,
+        "title": "Photography Workshop: Night Photography",
+        "date": "2025-12-03",
+        "time": "19:30",
+        "endTime": "22:00",
+        "location": "Tempe Town Lake",
+        "locationType": "In-Person",
+        "campus": "Off-Campus",
+        "description": "Learn techniques for capturing stunning night photos. Bring your camera and tripod!",
+        "hostGroup": "ASU Photography Club",
+        "hostGroupId": 8,
+        "category": [
+            "Workshop",
+            "Creative"
+        ],
+        "eventType": "Workshop",
+        "tags": [
+            "Photography",
+            "Art",
+            "Night",
+            "Tutorial"
+        ],
+        "image": "images/events/photo-workshop.jpg",
+        "isFree": false,
+        "price": 5,
+        "spotsTotal": 20,
+        "spotsLeft": 3,
+        "attendees": 17,
+        "rsvpRequired": true
+    },
+    {
+        "id": 10,
+        "title": "Robotics Competition Prep Meeting",
+        "date": "2025-11-27",
+        "time": "16:00",
+        "endTime": "19:00",
+        "location": "Polytechnic Engineering Lab",
+        "locationType": "In-Person",
+        "campus": "Polytechnic",
+        "description": "Final preparation session before the regional robotics competition. Team members only.",
+        "hostGroup": "Robotics Club",
+        "hostGroupId": 9,
+        "category": [
+            "Academic",
+            "Team Meeting"
+        ],
+        "eventType": "Club Meeting",
+        "tags": [
+            "Robotics",
+            "Competition",
+            "Engineering"
+        ],
+        "image": "images/events/robotics-meeting.jpg",
+        "isFree": true,
+        "spotsTotal": 30,
+        "spotsLeft": 0,
+        "attendees": 30,
+        "rsvpRequired": true
+    }
+]

@@ -1,0 +1,221 @@
+[
+    {
+        "id": 1,
+        "name": "Indian Students' Association at ASU",
+        "campus": "Tempe",
+        "categories": [
+            "Culture/Identity",
+            "Special Interest"
+        ],
+        "description": "Promoting Indian culture and heritage through events, festivals, and community engagement.",
+        "members": 450,
+        "logo": "images/logos/isa.png",
+        "website": "https://isa.asu.edu",
+        "contact": "isa@asu.edu",
+        "points": 850,
+        "mission": "To celebrate and share Indian culture with the ASU community while providing a home away from home for Indian students.",
+        "benefits": [
+            "Cultural events",
+            "Networking opportunities",
+            "Festival celebrations",
+            "Community support"
+        ]
+    },
+    {
+        "id": 2,
+        "name": "BRASA at ASU",
+        "campus": "Tempe",
+        "categories": [
+            "Culture/Identity",
+            "Special Interest"
+        ],
+        "description": "Brazilian Student Association promoting Brazilian culture and community.",
+        "members": 320,
+        "logo": "images/logos/brasa.png",
+        "website": "https://brasa.asu.edu",
+        "contact": "brasa@asu.edu",
+        "points": 720,
+        "mission": "Connecting Brazilian students and sharing Brazilian culture through social events and activities.",
+        "benefits": [
+            "Cultural celebrations",
+            "Portuguese language practice",
+            "Networking",
+            "Social events"
+        ]
+    },
+    {
+        "id": 3,
+        "name": "Association of Latino Professionals For America",
+        "campus": "Tempe",
+        "categories": [
+            "Academic/Professional",
+            "Culture/Identity"
+        ],
+        "description": "Empowering Latino students through professional development and networking.",
+        "members": 280,
+        "logo": "images/logos/alpfa.png",
+        "website": "https://alpfa.asu.edu",
+        "contact": "alpfa@asu.edu",
+        "points": 650,
+        "mission": "To empower and develop Latino business leaders through professional development and community service.",
+        "benefits": [
+            "Career workshops",
+            "Mentorship",
+            "Networking events",
+            "Leadership development"
+        ]
+    },
+    {
+        "id": 4,
+        "name": "The Pre-Law Society",
+        "campus": "Tempe",
+        "categories": [
+            "Academic/Professional"
+        ],
+        "description": "Supporting students interested in pursuing legal careers.",
+        "members": 195,
+        "logo": "images/logos/prelaw.png",
+        "website": "https://prelaw.asu.edu",
+        "contact": "prelaw@asu.edu",
+        "points": 580,
+        "mission": "To prepare students for law school and legal careers through education, networking, and mentorship.",
+        "benefits": [
+            "LSAT prep",
+            "Law school guidance",
+            "Guest speakers",
+            "Mock trials"
+        ]
+    },
+    {
+        "id": 5,
+        "name": "ASU Kendo Club",
+        "campus": "Tempe",
+        "categories": [
+            "Sports/Recreation",
+            "Culture/Identity"
+        ],
+        "description": "Traditional Japanese martial art of sword fighting.",
+        "members": 85,
+        "logo": "images/logos/kendo.png",
+        "website": "https://kendo.asu.edu",
+        "contact": "kendo@asu.edu",
+        "points": 420,
+        "mission": "To practice and promote the art of Kendo while building discipline and community.",
+        "benefits": [
+            "Martial arts training",
+            "Tournaments",
+            "Cultural exchange",
+            "Physical fitness"
+        ]
+    },
+    {
+        "id": 6,
+        "name": "Women in Computer Science",
+        "campus": "Tempe",
+        "categories": [
+            "Academic/Professional",
+            "Technology"
+        ],
+        "description": "Supporting women in technology and computer science fields.",
+        "members": 340,
+        "logo": "images/logos/wics.png",
+        "website": "https://wics.asu.edu",
+        "contact": "wics@asu.edu",
+        "points": 780,
+        "mission": "To empower women in computing through mentorship, professional development, and community building.",
+        "benefits": [
+            "Tech workshops",
+            "Hackathons",
+            "Industry connections",
+            "Mentorship program"
+        ]
+    },
+    {
+        "id": 7,
+        "name": "Entrepreneurship Club",
+        "campus": "Tempe",
+        "categories": [
+            "Academic/Professional",
+            "Business"
+        ],
+        "description": "Fostering entrepreneurial mindset and startup culture.",
+        "members": 425,
+        "logo": "images/logos/eclub.png",
+        "website": "https://eclub.asu.edu",
+        "contact": "eclub@asu.edu",
+        "points": 890,
+        "mission": "To inspire and support student entrepreneurs through resources, mentorship, and networking.",
+        "benefits": [
+            "Startup resources",
+            "Pitch competitions",
+            "Investor connections",
+            "Workshops"
+        ]
+    },
+    {
+        "id": 8,
+        "name": "ASU Photography Club",
+        "campus": "Tempe",
+        "categories": [
+            "Arts/Creative",
+            "Special Interest"
+        ],
+        "description": "Exploring photography through workshops, photo walks, and exhibitions.",
+        "members": 210,
+        "logo": "images/logos/photo.png",
+        "website": "https://photo.asu.edu",
+        "contact": "photo@asu.edu",
+        "points": 520,
+        "mission": "To develop photography skills and appreciation through hands-on learning and community.",
+        "benefits": [
+            "Photo walks",
+            "Workshops",
+            "Equipment access",
+            "Exhibitions"
+        ]
+    },
+    {
+        "id": 9,
+        "name": "Robotics Club",
+        "campus": "Polytechnic",
+        "categories": [
+            "Technology",
+            "Academic/Professional"
+        ],
+        "description": "Building and programming robots for competitions and learning.",
+        "members": 165,
+        "logo": "images/logos/robotics.png",
+        "website": "https://robotics.asu.edu",
+        "contact": "robotics@asu.edu",
+        "points": 680,
+        "mission": "To advance robotics knowledge through hands-on projects and competitions.",
+        "benefits": [
+            "Robot building",
+            "Competitions",
+            "Technical skills",
+            "Team projects"
+        ]
+    },
+    {
+        "id": 10,
+        "name": "Sustainability Coalition",
+        "campus": "Tempe",
+        "categories": [
+            "Civic Engagement",
+            "Environmental"
+        ],
+        "description": "Promoting environmental awareness and sustainable practices.",
+        "members": 290,
+        "logo": "images/logos/sustainability.png",
+        "website": "https://sustainability.asu.edu",
+        "contact": "sustainability@asu.edu",
+        "points": 710,
+        "mission": "To create a more sustainable campus through education, advocacy, and action.",
+        "benefits": [
+            "Environmental projects",
+            "Campus initiatives",
+            "Workshops",
+            "Community service"
+        ]
+    }
+]

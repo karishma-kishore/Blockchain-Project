@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sun Devil Crypto Dashboard</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-gold: #FFC627;
+            --accent-maroon: #8C1D40;
+            --success: #10B981;
+            --gradient-primary: linear-gradient(135deg, #8C1D40 0%, #FFC627 100%);
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 80px;
+            /* Space for bottom nav if needed */
+        }
+
+        /* Header */
+        .header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.25rem;
+            background: var(--gradient-primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Main Container */
+        .container {
+            padding: 1.5rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Wallet Card */
+        .wallet-card {
+            background: var(--gradient-primary);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 25px rgba(140, 29, 64, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wallet-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(45deg);
+            border-radius: 50%;
+        }
+
+        .balance-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .balance-amount {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .wallet-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: background 0.2s;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .see-all {
+            color: var(--accent-gold);
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        /* NFT Grid */
+        .nft-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .nft-card {
+            background: var(--bg-card);
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+
+        .nft-image {
+            width: 100%;
+            aspect-ratio: 1;
+            background-color: #334155;
+            position: relative;
+        }
+
+        .nft-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .nft-info {
+            padding: 0.75rem;
+        }
+
+        .nft-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .nft-collection {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Earn Section */
+        .earn-card {
+            background: var(--bg-card);
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid var(--glass-border);
+        }
+
+        .earn-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 198, 39, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--accent-gold);
+        }
+
+        .earn-content {
+            flex: 1;
+        }
+
+        .earn-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .earn-desc {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .earn-reward {
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        /* Store Preview */
+        .store-item {
+            background: var(--bg-card);
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--glass-border);
+        }
+
+        .store-btn {
+            background: var(--accent-maroon);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo">🔱 Sun Devil Crypto</div>
+        <button class="close-btn" onclick="window.location.href='index.html'">✕</button>
+    </header>
+
+    <div class="container">
+        <!-- Wallet Card -->
+        <div class="wallet-card">
+            <div class="balance-label">Total Balance</div>
+            <div class="balance-amount">1,450 SDC</div>
+            <div class="wallet-actions">
+                <button class="action-btn">Send</button>
+                <button class="action-btn">Receive</button>
+                <button class="action-btn">History</button>
+            </div>
+        </div>
+
+        <!-- NFT Collection -->
+        <div class="section-header">
+            <h2 class="section-title">Your Collectibles</h2>
+            <a href="collectibles.html" class="see-all">View All</a>
+        </div>
+        <div class="nft-grid">
+            <div class="nft-card">
+                <div class="nft-image">
+                    <img src="images/sparky_nft.png" alt="Sparky NFT">
+                </div>
+                <div class="nft-info">
+                    <div class="nft-name">Sparky #042</div>
+                    <div class="nft-collection">Genesis Collection</div>
+                </div>
+            </div>
+            <div class="nft-card">
+                <div class="nft-image">
+                    <img src="images/hackathon_badge.png" alt="Hackathon Badge">
+                </div>
+                <div class="nft-info">
+                    <div class="nft-name">Hackathon Winner</div>
+                    <div class="nft-collection">Achievement Badges</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How to Earn -->
+        <div class="section-header">
+            <h2 class="section-title">How to Earn</h2>
+        </div>
+        <div class="earn-card">
+            <div class="earn-icon">📅</div>
+            <div class="earn-content">
+                <div class="earn-title">Attend Events</div>
+                <div class="earn-desc">Check in at campus events</div>
+            </div>
+            <div class="earn-reward">+50 SDC</div>
+        </div>
+        <div class="earn-card">
+            <div class="earn-icon">🏆</div>
+            <div class="earn-content">
+                <div class="earn-title">Complete Quests</div>
+                <div class="earn-desc">Finish weekly Sun Devil challenges</div>
+            </div>
+            <div class="earn-reward">+100 SDC</div>
+        </div>
+
+        <!-- Store Preview -->
+        <div class="section-header">
+            <h2 class="section-title">Sun Devil Store</h2>
+            <a href="store.html" class="see-all">Visit Store</a>
+        </div>
+        <div class="store-item">
+            <div>
+                <div style="font-weight: 600;">ASU Hoodie</div>
+                <div style="color: var(--text-secondary); font-size: 0.875rem;">Limited Edition</div>
+            </div>
+            <button class="store-btn">2,000 SDC</button>
+        </div>
+        <div class="store-item">
+            <div>
+                <div style="font-weight: 600;">Cafeteria Meal Voucher</div>
+                <div style="color: var(--text-secondary); font-size: 0.875rem;">Valid at all locations</div>
+            </div>
+            <button class="store-btn">500 SDC</button>
+        </div>
+    </div>
+
+    <script>
+        // Simple interaction for demo
+        document.querySelectorAll('.action-btn, .store-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                alert('This feature is coming soon!');
+            });
+        });
+    </script>
+</body>
+
+</html>

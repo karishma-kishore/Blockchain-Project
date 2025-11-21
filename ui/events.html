@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events - Sun Devil Central</title>
+    <meta name="description" content="Browse upcoming events at ASU">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="logo">🔱 Sun Devil Central</div>
+        <ul class="top-nav-menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="groups.html">Groups</a></li>
+            <li><a href="events.html" class="active">Events</a></li>
+        </ul>
+        <div class="top-nav-right">
+            <span class="nav-icon" title="Search">🔍</span>
+            <span class="nav-icon" title="Bookmarks">🔖</span>
+            <span class="nav-icon" title="Notifications">🔔<span class="badge">3</span></span>
+            <span class="nav-icon" title="My Account">👤</span>
+        </div>
+    </nav>
+
+    <!-- Page Wrapper -->
+    <div class="page-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>Event Filters</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#" class="active" data-filter="all">📅 All Events</a></li>
+                    <li><a href="#" data-filter="upcoming">⏭️ Upcoming Events</a></li>
+                    <li><a href="#" data-filter="past">⏮️ Past Events</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3>My Activity</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#">📅 My Schedule</a></li>
+                    <li><a href="#">👥 My Groups</a></li>
+                    <li><a href="#">🎉 My Events</a></li>
+                    <li><a href="#">📋 My Checklists</a></li>
+                    <li><a href="#">📊 My Involvement</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="section-header">
+                <h1 class="section-title">Upcoming Events</h1>
+                <span class="text-secondary" id="event-count">Loading...</span>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" id="search-input"
+                    placeholder="Search events by name, description, or host...">
+            </div>
+
+            <!-- Filters -->
+            <div class="filters">
+                <div class="grid grid-4">
+                    <div class="filter-group">
+                        <label class="filter-label">Event Type</label>
+                        <select class="filter-select" id="type-filter">
+                            <option value="">All Types</option>
+                            <option value="Workshop">Workshop</option>
+                            <option value="Club Meeting">Club Meeting</option>
+                            <option value="Social">Social</option>
+                            <option value="Competition">Competition</option>
+                            <option value="Career Fair">Career Fair</option>
+                            <option value="Festival">Festival</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Location Type</label>
+                        <select class="filter-select" id="location-filter">
+                            <option value="">All Locations</option>
+                            <option value="In-Person">In-Person</option>
+                            <option value="Virtual">Virtual</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Campus</label>
+                        <select class="filter-select" id="campus-filter">
+                            <option value="">All Campuses</option>
+                            <option value="Tempe">Tempe</option>
+                            <option value="Polytechnic">Polytechnic</option>
+                            <option value="Online">Online</option>
+                            <option value="Off-Campus">Off-Campus</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">&nbsp;</label>
+                        <button class="btn btn-outline" id="clear-filters">Clear Filters</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Events List -->
+            <div class="mt-2" id="events-list">
+                <!-- Events will be loaded here -->
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading hidden" id="loading">
+                <div class="spinner"></div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state hidden" id="empty-state">
+                <div class="empty-state-icon">🎉</div>
+                <h3 class="empty-state-title">No events found</h3>
+                <p class="empty-state-description">Try adjusting your search or filters</p>
+                <button class="btn btn-primary" id="reset-search">Reset Search</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        let allEvents = [];
+        let filteredEvents = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                allEvents = await api.get('/events');
+
+                // Sort by date
+                allEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                filteredEvents = [...allEvents];
+                displayEvents(filteredEvents);
+                updateEventCount(filteredEvents.length);
+            } catch (error) {
+                console.error('Error loading events:', error);
+            }
+
+            // Setup event listeners
+            document.getElementById('search-input').addEventListener('input', handleSearch);
+            document.getElementById('type-filter').addEventListener('change', applyFilters);
+            document.getElementById('location-filter').addEventListener('change', applyFilters);
+            document.getElementById('campus-filter').addEventListener('change', applyFilters);
+            document.getElementById('clear-filters').addEventListener('click', clearFilters);
+            document.getElementById('reset-search').addEventListener('click', clearFilters);
+
+            // Sidebar filter links
+            document.querySelectorAll('[data-filter]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.querySelectorAll('[data-filter]').forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+
+                    const filter = link.dataset.filter;
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    if (filter === 'upcoming') {
+                        filteredEvents = allEvents.filter(event => new Date(event.date) >= today);
+                    } else if (filter === 'past') {
+                        filteredEvents = allEvents.filter(event => new Date(event.date) < today);
+                    } else {
+                        filteredEvents = [...allEvents];
+                    }
+
+                    applyFilters();
+                });
+            });
+        });
+
+        function displayEvents(events) {
+            const list = document.getElementById('events-list');
+            const emptyState = document.getElementById('empty-state');
+
+            if (events.length === 0) {
+                list.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            list.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+
+            list.innerHTML = events.map(event => `
+                <div class="card event-card mb-2">
+                    <div class="event-card-image"></div>
+                    <div class="event-card-content">
+                        <div class="event-card-header">
+                            <div>
+                                <h3 class="event-card-title">${event.title}</h3>
+                                <div class="event-card-date">📅 ${formatDate(event.date)} at ${event.time}</div>
+                                <div class="event-card-location">📍 ${event.location}</div>
+                            </div>
+                            ${event.isFree ? '<span class="event-free-tag">FREE</span>' : ''}
+                        </div>
+                        <p class="event-card-description">${event.description}</p>
+                        <div class="tags">
+                            <span class="tag tag-primary">${event.eventType}</span>
+                            ${event.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                        <div class="event-card-footer">
+                            <span class="event-host">Hosted by ${event.hostGroup}</span>
+                            <div>
+                                ${event.spotsLeft > 0 ?
+                    `<span class="event-spots">${event.spotsLeft} spots left</span>` :
+                    `<span class="event-spots" style="color: #EF4444;">Full</span>`
+                }
+                                <a href="event-detail.html?id=${event.id}" class="btn btn-sm btn-primary ml-1">
+                                    ${event.spotsLeft > 0 ? 'Register' : 'View'}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function handleSearch(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            filteredEvents = allEvents.filter(event =>
+                event.title.toLowerCase().includes(searchTerm) ||
+                event.description.toLowerCase().includes(searchTerm) ||
+                event.hostGroup.toLowerCase().includes(searchTerm) ||
+                event.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+            );
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const type = document.getElementById('type-filter').value;
+            const location = document.getElementById('location-filter').value;
+            const campus = document.getElementById('campus-filter').value;
+
+            let filtered = [...filteredEvents];
+
+            if (type) {
+                filtered = filtered.filter(event => event.eventType === type);
+            }
+
+            if (location) {
+                filtered = filtered.filter(event => event.locationType === location);
+            }
+
+            if (campus) {
+                filtered = filtered.filter(event => event.campus === campus);
+            }
+
+            displayEvents(filtered);
+            updateEventCount(filtered.length);
+        }
+
+        function clearFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('type-filter').value = '';
+            document.getElementById('location-filter').value = '';
+            document.getElementById('campus-filter').value = '';
+            filteredEvents = [...allEvents];
+            displayEvents(filteredEvents);
+            updateEventCount(filteredEvents.length);
+        }
+
+        function updateEventCount(count) {
+            document.getElementById('event-count').textContent = `${count} events`;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+    </script>
+</body>
+
+</html>

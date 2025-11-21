@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Collectibles</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            padding: 1.5rem;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .back-btn {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .nft-card {
+            background: var(--bg-card);
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+
+        .nft-image img {
+            width: 100%;
+            display: block;
+        }
+
+        .nft-info {
+            padding: 1rem;
+        }
+
+        .nft-name {
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <a href="dashboard.html" class="back-btn">← Back</a>
+        <h1>My Collectibles</h1>
+    </div>
+    <div class="grid">
+        <div class="nft-card">
+            <div class="nft-image"><img src="images/sparky_nft.png" alt="Sparky"></div>
+            <div class="nft-info">
+                <div class="nft-name">Sparky #042</div>
+            </div>
+        </div>
+        <div class="nft-card">
+            <div class="nft-image"><img src="images/hackathon_badge.png" alt="Badge"></div>
+            <div class="nft-info">
+                <div class="nft-name">Hackathon Winner</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
