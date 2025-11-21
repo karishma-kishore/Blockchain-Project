@@ -17,7 +17,7 @@ db.serialize(() => {
         password TEXT,
         email TEXT UNIQUE,
         role TEXT DEFAULT 'student',
-        sdc_tokens INTEGER DEFAULT 100,
+        sdc_tokens INTEGER DEFAULT 2000,
         wallet_address TEXT
     )`);
 
@@ -99,11 +99,11 @@ db.serialize(() => {
         const hasWalletAddress = columns.some(col => col.name === 'wallet_address');
 
         if (!hasSDCTokens) {
-            db.run(`ALTER TABLE users ADD COLUMN sdc_tokens INTEGER DEFAULT 100`, (err) => {
+            db.run(`ALTER TABLE users ADD COLUMN sdc_tokens INTEGER DEFAULT 2000`, (err) => {
                 if (!err) {
                     console.log("Added sdc_tokens column to users table.");
-                    // Update existing users to have 100 SDC tokens
-                    db.run(`UPDATE users SET sdc_tokens = 100 WHERE sdc_tokens IS NULL`);
+                    // Update existing users to have 2000 SDC tokens
+                    db.run(`UPDATE users SET sdc_tokens = 2000 WHERE sdc_tokens IS NULL`);
                 }
             });
         }
@@ -112,6 +112,19 @@ db.serialize(() => {
             db.run(`ALTER TABLE users ADD COLUMN wallet_address TEXT`, (err) => {
                 if (!err) console.log("Added wallet_address column to users table.");
             });
+        }
+    });
+
+    // Migration: Add direction column to crypto_conversions if it doesn't exist
+    db.all("PRAGMA table_info(crypto_conversions)", (err, columns) => {
+        if (!err && columns) {
+            const hasDirection = columns.some(col => col.name === 'direction');
+
+            if (!hasDirection) {
+                db.run(`ALTER TABLE crypto_conversions ADD COLUMN direction TEXT DEFAULT 'sdc-to-amoy'`, (err) => {
+                    if (!err) console.log("Added direction column to crypto_conversions table.");
+                });
+            }
         }
     });
 
@@ -190,6 +203,17 @@ db.serialize(() => {
                     if (!err) console.log("Default user 'Student1' created.");
                 }
             );
+        }
+    });
+
+    // Update existing users to have 2000 SDC tokens if they have less
+    db.run(`UPDATE users SET sdc_tokens = 2000 WHERE sdc_tokens < 2000 OR sdc_tokens IS NULL`, (err) => {
+        if (!err) {
+            db.get("SELECT COUNT(*) as count FROM users WHERE sdc_tokens = 2000", (err, row) => {
+                if (!err && row && row.count > 0) {
+                    console.log(`Updated ${row.count} user(s) to have 2000 SDC tokens.`);
+                }
+            });
         }
     });
 });

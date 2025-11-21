@@ -284,4 +284,135 @@ router.get('/conversion-history', requireAuth, (req, res) => {
     );
 });
 
+// Get Deposit Address for Amoy to SDC conversion
+router.get('/get-deposit-address', requireAuth, (req, res) => {
+    try {
+        const depositAddress = walletService.getServiceWalletAddress();
+
+        if (!depositAddress) {
+            return res.status(500).json({
+                error: 'Service wallet not configured. Please contact administrator.'
+            });
+        }
+
+        res.json({ depositAddress });
+    } catch (error) {
+        console.error('Error getting deposit address:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Convert Amoy to SDC (verify transaction and credit SDC)
+router.post('/convert-to-sdc', requireAuth, async (req, res) => {
+    const userId = req.session.user.id;
+    const { amoyAmount, walletAddress, txHash } = req.body;
+
+    if (!amoyAmount || amoyAmount <= 0) {
+        return res.status(400).json({ error: 'Invalid MATIC amount' });
+    }
+
+    if (!walletAddress) {
+        return res.status(400).json({ error: 'Wallet address is required' });
+    }
+
+    if (!txHash) {
+        return res.status(400).json({ error: 'Transaction hash is required' });
+    }
+
+    try {
+        // Verify the transaction on the blockchain
+        const txDetails = await walletService.verifyTransaction(txHash);
+
+        if (!txDetails.exists) {
+            return res.status(400).json({ error: 'Transaction not found on blockchain' });
+        }
+
+        if (!txDetails.confirmed) {
+            return res.status(400).json({ error: 'Transaction not yet confirmed' });
+        }
+
+        if (txDetails.status !== 'success') {
+            return res.status(400).json({ error: 'Transaction failed on blockchain' });
+        }
+
+        // Verify the transaction was sent to our service wallet
+        const serviceWalletAddress = walletService.getServiceWalletAddress();
+        if (txDetails.to.toLowerCase() !== serviceWalletAddress.toLowerCase()) {
+            return res.status(400).json({
+                error: 'Transaction was not sent to the correct deposit address'
+            });
+        }
+
+        // Verify the amount matches
+        const receivedAmount = parseFloat(txDetails.value);
+        if (Math.abs(receivedAmount - amoyAmount) > 0.0001) { // Allow small rounding differences
+            return res.status(400).json({
+                error: `Amount mismatch. Expected ${amoyAmount} MATIC, received ${receivedAmount} MATIC`
+            });
+        }
+
+        // Check if this transaction hash has already been used
+        db.get(
+            'SELECT * FROM crypto_conversions WHERE tx_hash = ?',
+            [txHash],
+            async (err, existingConversion) => {
+                if (err) return res.status(500).json({ error: err.message });
+
+                if (existingConversion) {
+                    return res.status(400).json({
+                        error: 'This transaction has already been processed'
+                    });
+                }
+
+                // Calculate SDC amount (1 MATIC = 10,000 SDC)
+                const sdcAmount = Math.floor(amoyAmount * 10000);
+
+                // Record the conversion
+                db.run(
+                    `INSERT INTO crypto_conversions (user_id, sdc_amount, amoy_amount, wallet_address, tx_hash, status, direction)
+                     VALUES (?, ?, ?, ?, ?, 'completed', 'amoy-to-sdc')`,
+                    [userId, sdcAmount, amoyAmount, walletAddress, txHash],
+                    function(err) {
+                        if (err) return res.status(500).json({ error: err.message });
+
+                        // Credit SDC tokens to user's account
+                        db.run(
+                            'UPDATE users SET sdc_tokens = sdc_tokens + ? WHERE id = ?',
+                            [sdcAmount, userId],
+                            (err) => {
+                                if (err) {
+                                    console.error('Error updating user balance:', err);
+                                    return res.status(500).json({ error: 'Transaction verified but failed to credit SDC' });
+                                }
+
+                                // Get updated SDC balance
+                                db.get(
+                                    'SELECT sdc_tokens FROM users WHERE id = ?',
+                                    [userId],
+                                    (err, user) => {
+                                        if (err) return res.status(500).json({ error: err.message });
+
+                                        res.json({
+                                            success: true,
+                                            message: `Successfully converted ${amoyAmount} MATIC to ${sdcAmount} SDC`,
+                                            amoyAmount: amoyAmount,
+                                            sdcAmount: sdcAmount,
+                                            newSDCBalance: user.sdc_tokens,
+                                            txHash: txHash
+                                        });
+                                    }
+                                );
+                            }
+                        );
+                    }
+                );
+            }
+        );
+
+    } catch (error) {
+        console.error('Error in convert-to-sdc:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 module.exports = router;

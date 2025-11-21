@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sun Devil Crypto Dashboard</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <style>
         :root {
             --bg-dark: #0f172a;
@@ -560,8 +561,8 @@
         </div>
         <div class="store-item">
             <div>
-                <div style="font-weight: 600;">💰 Get Crypto</div>
-                <div style="color: var(--text-secondary); font-size: 0.875rem;">Convert SDC to Polygon Amoy</div>
+                <div style="font-weight: 600;">💰 Crypto Conversion</div>
+                <div style="color: var(--text-secondary); font-size: 0.875rem;">Convert SDC ↔ Polygon Amoy</div>
             </div>
             <button class="store-btn crypto-btn" onclick="openCryptoModal()">Convert</button>
         </div>
@@ -585,7 +586,7 @@
     <div id="cryptoModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Convert to Crypto</h2>
+                <h2 class="modal-title">Crypto Conversion</h2>
                 <button class="modal-close" onclick="closeCryptoModal()">✕</button>
             </div>
             <div class="modal-body" id="modalBody">
@@ -596,9 +597,23 @@
                         <p style="margin: 0; font-size: 0.875rem;">Polygon Amoy Testnet (changeable in future updates)</p>
                     </div>
 
+                    <div class="form-group">
+                        <label class="form-label">Conversion Direction</label>
+                        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="radio" name="conversionDirection" value="sdc-to-amoy" checked onchange="updateConversionDirection()">
+                                <span>SDC → Amoy</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="radio" name="conversionDirection" value="amoy-to-sdc" onchange="updateConversionDirection()">
+                                <span>Amoy → SDC</span>
+                            </label>
+                        </div>
+                    </div>
+
                     <div class="conversion-rate">
                         <div class="rate-label">Conversion Rate</div>
-                        <div class="rate-value">1 SDC = 0.0001 MATIC</div>
+                        <div class="rate-value" id="conversionRateDisplay">1 SDC = 0.0001 MATIC</div>
                     </div>
 
                     <div class="info-box">
@@ -616,37 +631,37 @@
                         <label class="form-label">Your Wallet Address</label>
                         <input type="text" id="walletAddress" class="form-input"
                                placeholder="0x..."
-                               pattern="^0x[a-fA-F0-9]{40}$">
+                               title="Enter Ethereum address (0x followed by 40 hex characters)">
                         <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem;">
                             Get this from MetaMask by clicking your account
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Amount of SDC to Convert</label>
-                        <input type="number" id="sdcAmount" class="form-input"
+                        <label class="form-label" id="amountLabel">Amount of SDC to Convert</label>
+                        <input type="number" id="amountInput" class="form-input"
                                placeholder="Enter amount"
-                               min="1"
-                               max="999999"
+                               min="0"
+                               step="0.0001"
                                oninput="updateConversionPreview()">
                         <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                            Available: <span id="availableSDC">0</span> SDC
+                            Available: <span id="availableBalance">0 SDC</span>
                         </div>
                     </div>
 
                     <div class="convert-preview" id="conversionPreview" style="display: none;">
                         <div class="preview-row">
-                            <span>SDC to Convert:</span>
-                            <span id="previewSDC">0</span>
+                            <span id="previewFromLabel">SDC to Convert:</span>
+                            <span id="previewFromAmount">0</span>
                         </div>
                         <div class="preview-row">
-                            <span>You will receive:</span>
-                            <span id="previewMATIC">0 MATIC</span>
+                            <span id="previewToLabel">You will receive:</span>
+                            <span id="previewToAmount">0 MATIC</span>
                         </div>
                     </div>
 
-                    <button class="btn-primary" onclick="convertSDCToCrypto()" id="convertBtn" disabled>
-                        Convert to Crypto
+                    <button class="btn-primary" onclick="performConversion()" id="convertBtn" disabled>
+                        <span id="convertBtnText">Convert to Crypto</span>
                     </button>
                 </div>
 
@@ -671,15 +686,15 @@
 
                     <div class="convert-preview">
                         <div class="preview-row">
-                            <span>SDC Converted:</span>
-                            <span id="successSDC">0</span>
+                            <span id="successFromLabel">SDC Converted:</span>
+                            <span id="successFromAmount">0</span>
                         </div>
                         <div class="preview-row">
-                            <span>MATIC Received:</span>
-                            <span id="successMATIC">0</span>
+                            <span id="successToLabel">MATIC Received:</span>
+                            <span id="successToAmount">0</span>
                         </div>
                         <div class="preview-row">
-                            <span>Remaining SDC:</span>
+                            <span id="successRemainingLabel">Remaining SDC:</span>
                             <span id="successRemaining">0</span>
                         </div>
                     </div>
@@ -701,7 +716,14 @@
 
     <script>
         let currentSDCBalance = 0;
+        let currentAmoyBalance = 0;
         let userWalletAddress = null;
+        let metaMaskProvider = null;
+        let metaMaskSigner = null;
+        let connectedWalletAddress = null;
+        const SDC_TO_MATIC_RATE = 0.0001;
+        const MATIC_TO_SDC_RATE = 10000;
+        const POLYGON_AMOY_CHAIN_ID = '0x13882'; // 80002 in hex
 
         // Load SDC balance on page load
         async function loadSDCBalance() {
@@ -720,6 +742,7 @@
 
                 const data = await response.json();
                 currentSDCBalance = data.sdcTokens || 0;
+                currentAmoyBalance = data.amoyBalance || 0;
                 userWalletAddress = data.walletAddress;
 
                 // Update display
@@ -730,10 +753,146 @@
             }
         }
 
+        // Connect to MetaMask
+        async function connectMetaMask() {
+            try {
+                // Check if ethers is loaded
+                if (typeof ethers === 'undefined') {
+                    throw new Error('Ethers.js library is not loaded. Please refresh the page.');
+                }
+
+                if (typeof window.ethereum === 'undefined') {
+                    throw new Error('MetaMask is not installed. Please install MetaMask to continue.');
+                }
+
+                // Request account access
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+                // Check current network
+                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+
+                // Switch to Polygon Amoy if not already on it
+                if (chainId !== POLYGON_AMOY_CHAIN_ID) {
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: POLYGON_AMOY_CHAIN_ID }],
+                        });
+                    } catch (switchError) {
+                        // If network doesn't exist, add it
+                        if (switchError.code === 4902) {
+                            await window.ethereum.request({
+                                method: 'wallet_addEthereumChain',
+                                params: [{
+                                    chainId: POLYGON_AMOY_CHAIN_ID,
+                                    chainName: 'Polygon Amoy Testnet',
+                                    nativeCurrency: {
+                                        name: 'MATIC',
+                                        symbol: 'MATIC',
+                                        decimals: 18
+                                    },
+                                    rpcUrls: ['https://rpc-amoy.polygon.technology/'],
+                                    blockExplorerUrls: ['https://www.oklink.com/amoy']
+                                }]
+                            });
+                        } else {
+                            throw switchError;
+                        }
+                    }
+                }
+
+                // Create provider AFTER network switch
+                metaMaskProvider = new ethers.providers.Web3Provider(window.ethereum);
+                metaMaskSigner = metaMaskProvider.getSigner();
+                connectedWalletAddress = await metaMaskSigner.getAddress();
+
+                // Get Amoy balance
+                const balance = await metaMaskProvider.getBalance(connectedWalletAddress);
+                currentAmoyBalance = parseFloat(ethers.utils.formatEther(balance));
+
+                return { address: connectedWalletAddress, balance: currentAmoyBalance };
+            } catch (error) {
+                console.error('MetaMask connection error:', error);
+                throw error;
+            }
+        }
+
+        // Fetch Amoy balance from MetaMask
+        async function fetchAmoyBalance() {
+            try {
+                if (!metaMaskProvider || !connectedWalletAddress) {
+                    const result = await connectMetaMask();
+                    return result.balance;
+                }
+
+                const balance = await metaMaskProvider.getBalance(connectedWalletAddress);
+                currentAmoyBalance = parseFloat(ethers.utils.formatEther(balance));
+                return currentAmoyBalance;
+            } catch (error) {
+                console.error('Error fetching Amoy balance:', error);
+                throw error;
+            }
+        }
+
+        // Get current conversion direction
+        function getConversionDirection() {
+            const direction = document.querySelector('input[name="conversionDirection"]:checked');
+            return direction ? direction.value : 'sdc-to-amoy';
+        }
+
+        // Update UI based on conversion direction
+        async function updateConversionDirection() {
+            const direction = getConversionDirection();
+
+            if (direction === 'sdc-to-amoy') {
+                // SDC to Amoy
+                document.getElementById('conversionRateDisplay').textContent = '1 SDC = 0.0001 MATIC';
+                document.getElementById('amountLabel').textContent = 'Amount of SDC to Convert';
+                document.getElementById('availableBalance').textContent = currentSDCBalance + ' SDC';
+                document.getElementById('convertBtnText').textContent = 'Convert to Crypto';
+                document.getElementById('previewFromLabel').textContent = 'SDC to Convert:';
+                document.getElementById('previewToLabel').textContent = 'You will receive:';
+                document.getElementById('amountInput').placeholder = 'Enter SDC amount';
+                document.getElementById('amountInput').step = '1';
+            } else {
+                // Amoy to SDC - Connect to MetaMask and fetch balance
+                document.getElementById('conversionRateDisplay').textContent = '1 MATIC = 10,000 SDC';
+                document.getElementById('amountLabel').textContent = 'Amount of MATIC to Convert';
+                document.getElementById('availableBalance').textContent = 'Connecting to MetaMask...';
+                document.getElementById('convertBtnText').textContent = 'Convert to SDC';
+                document.getElementById('previewFromLabel').textContent = 'MATIC to Convert:';
+                document.getElementById('previewToLabel').textContent = 'You will receive:';
+                document.getElementById('amountInput').placeholder = 'Enter MATIC amount';
+                document.getElementById('amountInput').step = '0.0001';
+
+                // Fetch Amoy balance from MetaMask
+                try {
+                    const balance = await fetchAmoyBalance();
+                    document.getElementById('availableBalance').textContent = balance.toFixed(4) + ' MATIC';
+
+                    // Auto-fill wallet address
+                    if (connectedWalletAddress) {
+                        document.getElementById('walletAddress').value = connectedWalletAddress;
+                    }
+                } catch (error) {
+                    document.getElementById('availableBalance').textContent = 'Error: ' + error.message;
+                    alert('Failed to connect to MetaMask: ' + error.message);
+                }
+            }
+
+            // Clear input and preview
+            document.getElementById('amountInput').value = '';
+            document.getElementById('conversionPreview').style.display = 'none';
+            document.getElementById('convertBtn').disabled = true;
+        }
+
         // Open crypto modal
         function openCryptoModal() {
             document.getElementById('cryptoModal').classList.add('active');
-            document.getElementById('availableSDC').textContent = currentSDCBalance;
+
+            // Reset to SDC to Amoy direction
+            document.querySelector('input[name="conversionDirection"][value="sdc-to-amoy"]').checked = true;
+            updateConversionDirection();
 
             // Pre-fill wallet address if saved
             if (userWalletAddress) {
@@ -755,40 +914,58 @@
 
         // Update conversion preview
         function updateConversionPreview() {
-            const sdcAmount = parseFloat(document.getElementById('sdcAmount').value) || 0;
+            const direction = getConversionDirection();
+            const amount = parseFloat(document.getElementById('amountInput').value) || 0;
             const walletAddress = document.getElementById('walletAddress').value.trim();
 
-            // Validate inputs
-            const isValidAmount = sdcAmount > 0 && sdcAmount <= currentSDCBalance;
-            const isValidAddress = /^0x[a-fA-F0-9]{40}$/.test(walletAddress);
+            let isValidAmount = false;
+            let fromAmount, toAmount, fromText, toText;
+
+            if (direction === 'sdc-to-amoy') {
+                // SDC to Amoy conversion
+                isValidAmount = amount > 0 && amount <= currentSDCBalance;
+                if (isValidAmount) {
+                    fromAmount = amount;
+                    toAmount = (amount * SDC_TO_MATIC_RATE).toFixed(4);
+                    fromText = amount;
+                    toText = `${toAmount} MATIC`;
+                }
+            } else {
+                // Amoy to SDC conversion
+                isValidAmount = amount > 0 && amount <= currentAmoyBalance;
+                if (isValidAmount) {
+                    fromAmount = amount.toFixed(4);
+                    toAmount = Math.floor(amount * MATIC_TO_SDC_RATE);
+                    fromText = `${fromAmount} MATIC`;
+                    toText = toAmount + ' SDC';
+                }
+            }
+
+            // Validate wallet address (case-insensitive)
+            const isValidAddress = /^0x[a-fA-F0-9]{40}$/i.test(walletAddress);
 
             // Enable/disable convert button
             document.getElementById('convertBtn').disabled = !(isValidAmount && isValidAddress);
 
             // Show/hide preview
             if (isValidAmount) {
-                const maticAmount = (sdcAmount * 0.0001).toFixed(4);
-                document.getElementById('previewSDC').textContent = sdcAmount;
-                document.getElementById('previewMATIC').textContent = `${maticAmount} MATIC`;
+                document.getElementById('previewFromAmount').textContent = fromText;
+                document.getElementById('previewToAmount').textContent = toText;
                 document.getElementById('conversionPreview').style.display = 'block';
             } else {
                 document.getElementById('conversionPreview').style.display = 'none';
             }
         }
 
-        // Convert SDC to Crypto
-        async function convertSDCToCrypto() {
-            const sdcAmount = parseInt(document.getElementById('sdcAmount').value);
+        // Perform conversion based on selected direction
+        async function performConversion() {
+            const direction = getConversionDirection();
+            const amount = parseFloat(document.getElementById('amountInput').value);
             const walletAddress = document.getElementById('walletAddress').value.trim();
 
-            // Validate
-            if (sdcAmount <= 0 || sdcAmount > currentSDCBalance) {
-                alert('Invalid SDC amount');
-                return;
-            }
-
-            if (!/^0x[a-fA-F0-9]{40}$/.test(walletAddress)) {
-                alert('Invalid wallet address. Please enter a valid Ethereum address.');
+            // Validate wallet address (case-insensitive)
+            if (!/^0x[a-fA-F0-9]{40}$/i.test(walletAddress)) {
+                alert('Invalid wallet address. Please enter a valid Ethereum address (0x followed by 40 hex characters).');
                 return;
             }
 
@@ -797,39 +974,130 @@
             document.getElementById('loadingView').style.display = 'block';
 
             try {
-                const response = await fetch('/api/convert-to-amoy', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        sdcAmount: sdcAmount,
-                        walletAddress: walletAddress
-                    })
-                });
+                let response, result;
 
-                const result = await response.json();
+                if (direction === 'sdc-to-amoy') {
+                    // SDC to Amoy conversion
+                    const sdcAmount = parseInt(amount);
 
-                if (!response.ok) {
-                    throw new Error(result.error || 'Conversion failed');
+                    if (sdcAmount <= 0 || sdcAmount > currentSDCBalance) {
+                        throw new Error('Invalid SDC amount');
+                    }
+
+                    response = await fetch('/api/convert-to-amoy', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            sdcAmount: sdcAmount,
+                            walletAddress: walletAddress
+                        })
+                    });
+
+                    result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(result.error || 'Conversion failed');
+                    }
+
+                    // Show success view
+                    document.getElementById('loadingView').style.display = 'none';
+                    document.getElementById('successView').style.display = 'block';
+
+                    // Update success view for SDC to Amoy
+                    document.getElementById('successFromLabel').textContent = 'SDC Converted:';
+                    document.getElementById('successFromAmount').textContent = result.sdcAmount;
+                    document.getElementById('successToLabel').textContent = 'MATIC Received:';
+                    document.getElementById('successToAmount').textContent = `${result.amoyAmount} MATIC`;
+                    document.getElementById('successRemainingLabel').textContent = 'Remaining SDC:';
+                    document.getElementById('successRemaining').textContent = result.remainingSDC;
+
+                    const txLink = document.getElementById('txLink');
+                    txLink.href = result.explorerUrl;
+                    txLink.textContent = result.txHash;
+
+                    // Update current balance
+                    currentSDCBalance = result.remainingSDC;
+
+                } else {
+                    // Amoy to SDC conversion - Use MetaMask to send actual transaction
+                    const maticAmount = parseFloat(amount);
+
+                    if (maticAmount <= 0 || maticAmount > currentAmoyBalance) {
+                        throw new Error('Invalid MATIC amount');
+                    }
+
+                    // Ensure MetaMask is connected
+                    if (!metaMaskProvider || !metaMaskSigner) {
+                        await connectMetaMask();
+                    }
+
+                    // Step 1: Get the deposit address from the backend
+                    const depositResponse = await fetch('/api/get-deposit-address', {
+                        method: 'GET',
+                        credentials: 'include'
+                    });
+
+                    if (!depositResponse.ok) {
+                        throw new Error('Failed to get deposit address');
+                    }
+
+                    const depositData = await depositResponse.json();
+                    const depositAddress = depositData.depositAddress;
+
+                    // Step 2: Send MATIC transaction via MetaMask
+                    const tx = await metaMaskSigner.sendTransaction({
+                        to: depositAddress,
+                        value: ethers.utils.parseEther(maticAmount.toString())
+                    });
+
+                    // Wait for transaction to be mined
+                    const receipt = await tx.wait();
+
+                    // Step 3: Submit transaction hash to backend for verification and SDC credit
+                    response = await fetch('/api/convert-to-sdc', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            amoyAmount: maticAmount,
+                            walletAddress: connectedWalletAddress,
+                            txHash: receipt.transactionHash
+                        })
+                    });
+
+                    result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(result.error || 'Conversion failed');
+                    }
+
+                    // Refresh Amoy balance from MetaMask
+                    currentAmoyBalance = await fetchAmoyBalance();
+
+                    // Show success view
+                    document.getElementById('loadingView').style.display = 'none';
+                    document.getElementById('successView').style.display = 'block';
+
+                    // Update success view for Amoy to SDC
+                    document.getElementById('successFromLabel').textContent = 'MATIC Converted:';
+                    document.getElementById('successFromAmount').textContent = `${result.amoyAmount} MATIC`;
+                    document.getElementById('successToLabel').textContent = 'SDC Received:';
+                    document.getElementById('successToAmount').textContent = result.sdcAmount;
+                    document.getElementById('successRemainingLabel').textContent = 'Remaining MATIC:';
+                    document.getElementById('successRemaining').textContent = `${currentAmoyBalance.toFixed(4)} MATIC`;
+
+                    const txLink = document.getElementById('txLink');
+                    txLink.href = `https://www.oklink.com/amoy/tx/${receipt.transactionHash}`;
+                    txLink.textContent = receipt.transactionHash;
+
+                    // Update current balances
+                    currentSDCBalance = result.newSDCBalance || currentSDCBalance;
                 }
-
-                // Show success view
-                document.getElementById('loadingView').style.display = 'none';
-                document.getElementById('successView').style.display = 'block';
-
-                // Update success view
-                document.getElementById('successSDC').textContent = result.sdcAmount;
-                document.getElementById('successMATIC').textContent = `${result.amoyAmount} MATIC`;
-                document.getElementById('successRemaining').textContent = result.remainingSDC;
-
-                const txLink = document.getElementById('txLink');
-                txLink.href = result.explorerUrl;
-                txLink.textContent = result.txHash;
-
-                // Update current balance
-                currentSDCBalance = result.remainingSDC;
 
             } catch (error) {
                 console.error('Conversion error:', error);

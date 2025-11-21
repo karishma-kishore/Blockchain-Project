@@ -15,6 +15,25 @@ class WalletService {
         }
 
         this.wallet = this.privateKey ? new ethers.Wallet(this.privateKey, this.provider) : null;
+
+        // Validate that the derived address matches the expected public key (if provided)
+        if (this.wallet && process.env.SERVICE_WALLET_PUBLIC_KEY) {
+            const expectedAddress = process.env.SERVICE_WALLET_PUBLIC_KEY.toLowerCase();
+            const actualAddress = this.wallet.address.toLowerCase();
+
+            if (actualAddress !== expectedAddress) {
+                console.error('ERROR: Wallet address mismatch!');
+                console.error(`Expected: ${expectedAddress}`);
+                console.error(`Derived: ${actualAddress}`);
+                console.error('Please verify your SERVICE_WALLET_PRIVATE_KEY and SERVICE_WALLET_PUBLIC_KEY in .env');
+            } else {
+                console.log(`✓ Service wallet initialized: ${this.wallet.address}`);
+                console.log('  Users can send MATIC to this address to convert to SDC');
+            }
+        } else if (this.wallet) {
+            console.log(`✓ Service wallet initialized: ${this.wallet.address}`);
+            console.log('  Users can send MATIC to this address to convert to SDC');
+        }
     }
 
     /**
