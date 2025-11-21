@@ -174,7 +174,7 @@ db.serialize(() => {
         }
     });
 
-    // Create a default test user
+    // Create default test users
     db.get("SELECT count(*) as count FROM users", (err, row) => {
         if (row.count === 0) {
             const passwordHash = bcrypt.hashSync('password123', 10);
@@ -182,6 +182,12 @@ db.serialize(() => {
                 ['student', passwordHash, 'student@asu.edu'],
                 (err) => {
                     if (!err) console.log("Default user 'student' created.");
+                }
+            );
+            db.run(`INSERT INTO users (username, password, email) VALUES (?, ?, ?)`,
+                ['Student1', passwordHash, 'student1@asu.edu'],
+                (err) => {
+                    if (!err) console.log("Default user 'Student1' created.");
                 }
             );
         }

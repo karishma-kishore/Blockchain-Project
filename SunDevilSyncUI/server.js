@@ -22,6 +22,25 @@ app.use(session({
     cookie: { secure: false } // Set to true if using HTTPS
 }));
 
+// Auto-login as Student1 if no session exists
+app.use((req, res, next) => {
+    if (!req.session.user) {
+        db.get(`SELECT * FROM users WHERE username = ?`, ['Student1'], (err, user) => {
+            if (!err && user) {
+                req.session.user = {
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                    role: user.role
+                };
+            }
+            next();
+        });
+    } else {
+        next();
+    }
+});
+
 // Routes
 const authRoutes = require('./routes/auth');
 const apiRoutes = require('./routes/api');
