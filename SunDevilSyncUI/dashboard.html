@@ -706,7 +706,7 @@
         // Load SDC balance on page load
         async function loadSDCBalance() {
             try {
-                const response = await fetch('http://localhost:3000/api/sdc-balance', {
+                const response = await fetch('/api/sdc-balance', {
                     credentials: 'include'
                 });
 
@@ -797,7 +797,7 @@
             document.getElementById('loadingView').style.display = 'block';
 
             try {
-                const response = await fetch('http://localhost:3000/api/convert-to-amoy', {
+                const response = await fetch('/api/convert-to-amoy', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

@@ -19,7 +19,12 @@ app.use(session({
     secret: 'sundevil_secret_key',
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false } // Set to true if using HTTPS
+    cookie: {
+        secure: false, // Keep false to work with both HTTP and HTTPS
+        sameSite: 'lax', // Allow cookies to work with tunnels
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
 }));
 
 // Auto-login as Student1 if no session exists

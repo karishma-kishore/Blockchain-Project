@@ -1,7 +1,7 @@
 // Main JavaScript utilities for ASU Sun Devil Central
 
-// API Base URL
-const API_BASE_URL = 'http://localhost:3000/api';
+// API Base URL - Use relative path to work with tunnels and localhost
+const API_BASE_URL = '/api';
 
 // Auth State
 let currentUser = null;
