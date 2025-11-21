@@ -192,6 +192,27 @@ button {
     margin-left: 4px;
 }
 
+.badge-primary {
+    background: var(--asu-maroon);
+    color: white;
+}
+.badge-secondary {
+    background: #E5E7EB;
+    color: var(--text-primary);
+}
+.badge-success {
+    background: #10B981;
+    color: white;
+}
+.badge-warning {
+    background: #F59E0B;
+    color: white;
+}
+.badge-info {
+    background: #3B82F6;
+    color: white;
+}
+
 /* === Sidebar Navigation === */
 .sidebar-section {
     margin-bottom: var(--spacing-lg);

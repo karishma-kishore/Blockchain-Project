@@ -16,6 +16,11 @@ module.exports = {
     hardhat: {
       chainId: 1337,
     },
+    polygon_amoy: {
+      url: process.env.AMOY_RPC_URL || "https://rpc-amoy.polygon.technology",
+      accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
+      chainId: 80002,
+    },
     polygon_testnet: {
       url: process.env.POLYGON_TESTNET_RPC || "https://rpc-mumbai.maticvigil.com",
       accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],

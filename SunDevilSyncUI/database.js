@@ -93,6 +93,20 @@ db.serialize(() => {
         FOREIGN KEY(user_id) REFERENCES users(id)
     )`);
 
+    // Minted Badges Table (off-chain index)
+    db.run(`CREATE TABLE IF NOT EXISTS minted_badges (
+        token_id INTEGER PRIMARY KEY,
+        student_wallet TEXT,
+        event_id INTEGER,
+        event_name TEXT,
+        event_date TEXT,
+        achievement_type TEXT,
+        metadata_uri TEXT,
+        tx_hash TEXT,
+        network TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);
+
     // Migration: Add sdc_tokens and wallet_address columns if they don't exist
     db.all("PRAGMA table_info(users)", (err, columns) => {
         const hasSDCTokens = columns.some(col => col.name === 'sdc_tokens');
@@ -190,6 +204,32 @@ db.serialize(() => {
                     if (!err) console.log("Default user 'Student1' created.");
                 }
             );
+        }
+    });
+
+    // Ensure admin user exists for minting badges
+    const adminPasswordHash = bcrypt.hashSync('adminpass123', 10);
+    db.get("SELECT * FROM users WHERE username = ?", ['admin'], (err, admin) => {
+        if (err) {
+            console.error('Error checking admin user:', err);
+            return;
+        }
+        if (!admin) {
+            db.run(
+                `INSERT INTO users (username, password, email, role, sdc_tokens) VALUES (?, ?, ?, 'admin', 0)`,
+                ['admin', adminPasswordHash, 'admin@asu.edu'],
+                (insertErr) => {
+                    if (insertErr && insertErr.message.includes('UNIQUE')) {
+                        console.warn("Admin user already exists but couldn't be fetched initially.");
+                    } else if (!insertErr) {
+                        console.log("Default admin user 'admin' created.");
+                    }
+                }
+            );
+        } else if (admin.role !== 'admin') {
+            db.run(`UPDATE users SET role = 'admin' WHERE username = ?`, ['admin'], (updateErr) => {
+                if (updateErr) console.error('Failed to elevate admin user role:', updateErr);
+            });
         }
     });
 });

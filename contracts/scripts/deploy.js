@@ -39,6 +39,21 @@ async function main() {
   const collectibleAddress = await collectible721.getAddress();
   console.log("Collectible721 deployed to:", collectibleAddress);
 
+  // Deploy SunDevilBadge (ERC-721 badge contract used by backend)
+  console.log("\nDeploying SunDevilBadge...");
+  const SunDevilBadge = await hre.ethers.getContractFactory("SunDevilBadge");
+  const sunDevilBadge = await SunDevilBadge.deploy();
+  await sunDevilBadge.waitForDeployment();
+  const badgeAddress = await sunDevilBadge.getAddress();
+  console.log("SunDevilBadge deployed to:", badgeAddress);
+
+  // Grant backend minter role if different from deployer
+  if (backendMinter && backendMinter.toLowerCase() !== deployer.address.toLowerCase()) {
+    const grantTx = await sunDevilBadge.setMinter(backendMinter, true);
+    await grantTx.wait();
+    console.log("Granted MINTER_ROLE to backend:", backendMinter);
+  }
+
   // Save deployment info
   const deploymentInfo = {
     network: hre.network.name,
@@ -54,6 +69,11 @@ async function main() {
         address: collectibleAddress,
         name: "SunDevilSync Collectible",
         symbol: "SDS-COL"
+      },
+      SunDevilBadge: {
+        address: badgeAddress,
+        name: "SunDevil Badge",
+        symbol: "SDB"
       }
     },
     deployedAt: new Date().toISOString()
@@ -78,9 +98,11 @@ async function main() {
   console.log("\n=== Deployment Summary ===");
   console.log("AchievementSBT:", achievementAddress);
   console.log("Collectible721:", collectibleAddress);
+  console.log("SunDevilBadge:", badgeAddress);
   console.log("\nVerify contracts with:");
   console.log(`npx hardhat verify --network ${hre.network.name} ${achievementAddress} "SunDevilSync Achievement" "SDS-ACH" "${deployer.address}" "${backendMinter}"`);
   console.log(`npx hardhat verify --network ${hre.network.name} ${collectibleAddress} "SunDevilSync Collectible" "SDS-COL" "${deployer.address}" "${backendMinter}"`);
+  console.log(`npx hardhat verify --network ${hre.network.name} ${badgeAddress}`);
 }
 
 main()

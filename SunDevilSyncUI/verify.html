@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify NFT Badge - Sun Devil Central</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+
+<body>
+    <nav class="top-nav">
+        <div class="logo">🔱 Sun Devil Central</div>
+        <ul class="top-nav-menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="groups.html">Groups</a></li>
+            <li><a href="events.html">Events</a></li>
+            <li><a href="badges.html">Badges</a></li>
+            <li><a href="verify.html" class="active">Verify Badge</a></li>
+            <li><a href="admin.html">Admin</a></li>
+        </ul>
+        <div class="top-nav-right">
+            <span class="nav-icon" title="Search">🔍</span>
+            <span class="nav-icon" title="Bookmarks">🔖</span>
+            <span class="nav-icon" title="Notifications">🔔<span class="badge">3</span></span>
+            <span class="nav-icon" title="My Account">👤</span>
+            <div class="auth-buttons">
+                <button id="login-btn" class="btn-secondary">Login</button>
+                <button id="logout-btn" class="btn-secondary" style="display: none;">Logout</button>
+                <span id="user-display" style="display: none; margin-right: 10px; color: white;"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Login</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn-primary">Login</button>
+                <p id="login-error" style="color: red;"></p>
+            </form>
+        </div>
+    </div>
+
+    <div class="page-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>Navigation</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="index.html">🏠 Home</a></li>
+                    <li><a href="events.html">📅 Events</a></li>
+                    <li><a href="groups.html">👥 Groups</a></li>
+                    <li><a href="badges.html">🏅 Badges</a></li>
+                    <li><a href="verify.html" class="active">✅ Verify Badge</a></li>
+                    <li><a href="admin.html">🛠️ Admin</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <section class="hero">
+                <h1 class="hero-title">Verify Sun Devil Badge</h1>
+                <p class="hero-subtitle">Employers and faculty can confirm that an NFT badge is legitimate. Enter a
+                    token ID minted on Polygon (or use mock mode for testing).
+                </p>
+                <div class="hero-actions">
+                    <a href="admin.html" class="btn btn-secondary btn-lg">Mint a Badge</a>
+                    <span id="badge-status" class="badge badge-secondary"></span>
+                </div>
+            </section>
+
+            <section class="grid grid-2" style="margin-top: var(--spacing-lg);">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Lookup Badge</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-secondary" style="margin-bottom: var(--spacing-md);">
+                            Paste a token ID from the SunDevil Badge contract. In mock mode, any minted token from the
+                            admin page will show here.
+                        </p>
+                        <form id="badge-lookup-form" class="form">
+                            <div class="form-group">
+                                <label for="badge-token-id">Token ID</label>
+                                <input type="number" id="badge-token-id" name="tokenId" min="1" placeholder="e.g. 1"
+                                    required>
+                            </div>
+                            <button type="submit" class="btn-primary">Verify</button>
+                            <span id="badge-lookup-status" class="text-secondary" style="margin-left: 10px;"></span>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="badge-result">
+                    <div class="card">
+                        <div class="card-body">
+                            <p class="text-secondary">Results will appear here after you verify a badge.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/badges.js"></script>
+</body>
+
+</html>

@@ -154,16 +154,19 @@ const auth = {
     },
 
     updateUI() {
-        const loginBtn = document.getElementById('login-btn');
-        const logoutBtn = document.getElementById('logout-btn');
-        const userDisplay = document.getElementById('user-display');
-        const modal = document.getElementById('login-modal');
+    const loginBtn = document.getElementById('login-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+    const userDisplay = document.getElementById('user-display');
+    const modal = document.getElementById('login-modal');
 
-        if (currentUser) {
-            if (loginBtn) loginBtn.style.display = 'none';
-            if (logoutBtn) logoutBtn.style.display = 'inline-block';
-            if (userDisplay) {
-                userDisplay.textContent = `Hi, ${currentUser.username}`;
+    // Keep a global reference updated for other scripts
+    window.currentUser = currentUser;
+
+    if (currentUser) {
+        if (loginBtn) loginBtn.style.display = 'none';
+        if (logoutBtn) logoutBtn.style.display = 'inline-block';
+        if (userDisplay) {
+            userDisplay.textContent = `Hi, ${currentUser.username}`;
                 userDisplay.style.display = 'inline-block';
             }
             if (modal) modal.style.display = 'none';
@@ -274,9 +277,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // Export for other scripts if needed (though mostly global)
 window.api = api;
 window.auth = auth;
-window.currentUser = currentUser;
 window.toggleGroupMembership = toggleGroupMembership;
 window.toggleEventRSVP = toggleEventRSVP;
 window.loadFromStorage = loadFromStorage;
 window.toggleBookmark = toggleBookmark;
-
+window.getCurrentUser = () => currentUser;
