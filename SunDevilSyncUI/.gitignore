@@ -3,3 +3,5 @@ node_modules/
 *.db
 cookies.txt
 *.log
+.env
+database.sqlite

@@ -255,6 +255,236 @@
             font-weight: 600;
             cursor: pointer;
         }
+
+        .store-btn.crypto-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid var(--glass-border);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box {
+            background: rgba(255, 198, 39, 0.1);
+            border: 1px solid var(--accent-gold);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-box-title {
+            font-weight: 600;
+            color: var(--accent-gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .conversion-rate {
+            background: var(--bg-dark);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .rate-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .rate-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--bg-dark);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+        }
+
+        .convert-preview {
+            background: var(--bg-dark);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .preview-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .preview-row:last-child {
+            margin-bottom: 0;
+            padding-top: 0.5rem;
+            border-top: 1px solid var(--glass-border);
+            font-weight: 700;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .steps-list {
+            list-style: none;
+            counter-reset: step;
+        }
+
+        .steps-list li {
+            counter-increment: step;
+            padding-left: 2rem;
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .steps-list li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: var(--accent-gold);
+            color: var(--bg-dark);
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.75rem;
+        }
+
+        .success-message {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .success-message .icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tx-link {
+            color: var(--accent-gold);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 3px solid var(--glass-border);
+            border-top: 3px solid var(--accent-gold);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 
@@ -268,11 +498,11 @@
         <!-- Wallet Card -->
         <div class="wallet-card">
             <div class="balance-label">Total Balance</div>
-            <div class="balance-amount">1,450 SDC</div>
+            <div class="balance-amount" id="sdcBalance">Loading...</div>
             <div class="wallet-actions">
                 <button class="action-btn">Send</button>
                 <button class="action-btn">Receive</button>
-                <button class="action-btn">History</button>
+                <button class="action-btn" onclick="window.location.href='#'">History</button>
             </div>
         </div>
 
@@ -309,10 +539,10 @@
         <div class="earn-card">
             <div class="earn-icon">📅</div>
             <div class="earn-content">
-                <div class="earn-title">Attend Events</div>
-                <div class="earn-desc">Check in at campus events</div>
+                <div class="earn-title">RSVP to Events</div>
+                <div class="earn-desc">Earn tokens when you RSVP</div>
             </div>
-            <div class="earn-reward">+50 SDC</div>
+            <div class="earn-reward">+10 SDC</div>
         </div>
         <div class="earn-card">
             <div class="earn-icon">🏆</div>
@@ -330,6 +560,13 @@
         </div>
         <div class="store-item">
             <div>
+                <div style="font-weight: 600;">💰 Get Crypto</div>
+                <div style="color: var(--text-secondary); font-size: 0.875rem;">Convert SDC to Polygon Amoy</div>
+            </div>
+            <button class="store-btn crypto-btn" onclick="openCryptoModal()">Convert</button>
+        </div>
+        <div class="store-item">
+            <div>
                 <div style="font-weight: 600;">ASU Hoodie</div>
                 <div style="color: var(--text-secondary); font-size: 0.875rem;">Limited Edition</div>
             </div>
@@ -344,12 +581,282 @@
         </div>
     </div>
 
+    <!-- Crypto Conversion Modal -->
+    <div id="cryptoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Convert to Crypto</h2>
+                <button class="modal-close" onclick="closeCryptoModal()">✕</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Initial View -->
+                <div id="initialView">
+                    <div class="info-box">
+                        <div class="info-box-title">🔗 Supported Network</div>
+                        <p style="margin: 0; font-size: 0.875rem;">Polygon Amoy Testnet (changeable in future updates)</p>
+                    </div>
+
+                    <div class="conversion-rate">
+                        <div class="rate-label">Conversion Rate</div>
+                        <div class="rate-value">1 SDC = 0.0001 MATIC</div>
+                    </div>
+
+                    <div class="info-box">
+                        <div class="info-box-title">📱 How to Get Started</div>
+                        <ul class="steps-list">
+                            <li>Install <strong>MetaMask</strong> browser extension or mobile app</li>
+                            <li>Create or import a wallet</li>
+                            <li>Add <strong>Polygon Amoy Testnet</strong> to your networks</li>
+                            <li>Copy your wallet address and paste it below</li>
+                            <li>Choose how many SDC tokens to convert</li>
+                        </ul>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Your Wallet Address</label>
+                        <input type="text" id="walletAddress" class="form-input"
+                               placeholder="0x..."
+                               pattern="^0x[a-fA-F0-9]{40}$">
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                            Get this from MetaMask by clicking your account
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Amount of SDC to Convert</label>
+                        <input type="number" id="sdcAmount" class="form-input"
+                               placeholder="Enter amount"
+                               min="1"
+                               max="999999"
+                               oninput="updateConversionPreview()">
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                            Available: <span id="availableSDC">0</span> SDC
+                        </div>
+                    </div>
+
+                    <div class="convert-preview" id="conversionPreview" style="display: none;">
+                        <div class="preview-row">
+                            <span>SDC to Convert:</span>
+                            <span id="previewSDC">0</span>
+                        </div>
+                        <div class="preview-row">
+                            <span>You will receive:</span>
+                            <span id="previewMATIC">0 MATIC</span>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary" onclick="convertSDCToCrypto()" id="convertBtn" disabled>
+                        Convert to Crypto
+                    </button>
+                </div>
+
+                <!-- Loading View -->
+                <div id="loadingView" style="display: none;">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Processing your transaction...</p>
+                        <p style="font-size: 0.875rem; color: var(--text-secondary);">This may take a few moments</p>
+                    </div>
+                </div>
+
+                <!-- Success View -->
+                <div id="successView" style="display: none;">
+                    <div class="success-message">
+                        <div class="icon">✅</div>
+                        <h3 style="margin-bottom: 0.5rem;">Conversion Successful!</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                            Your crypto has been sent to your wallet
+                        </p>
+                    </div>
+
+                    <div class="convert-preview">
+                        <div class="preview-row">
+                            <span>SDC Converted:</span>
+                            <span id="successSDC">0</span>
+                        </div>
+                        <div class="preview-row">
+                            <span>MATIC Received:</span>
+                            <span id="successMATIC">0</span>
+                        </div>
+                        <div class="preview-row">
+                            <span>Remaining SDC:</span>
+                            <span id="successRemaining">0</span>
+                        </div>
+                    </div>
+
+                    <div style="background: var(--bg-dark); border-radius: 0.75rem; padding: 1rem; margin-bottom: 1rem;">
+                        <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+                            Transaction Hash
+                        </div>
+                        <a id="txLink" href="#" target="_blank" class="tx-link"></a>
+                    </div>
+
+                    <button class="btn-primary" onclick="closeCryptoModal()">
+                        Done
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Simple interaction for demo
-        document.querySelectorAll('.action-btn, .store-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
+        let currentSDCBalance = 0;
+        let userWalletAddress = null;
+
+        // Load SDC balance on page load
+        async function loadSDCBalance() {
+            try {
+                const response = await fetch('http://localhost:3000/api/sdc-balance', {
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        window.location.href = 'login.html';
+                        return;
+                    }
+                    throw new Error('Failed to load balance');
+                }
+
+                const data = await response.json();
+                currentSDCBalance = data.sdcTokens || 0;
+                userWalletAddress = data.walletAddress;
+
+                // Update display
+                document.getElementById('sdcBalance').textContent = `${currentSDCBalance.toLocaleString()} SDC`;
+            } catch (error) {
+                console.error('Error loading balance:', error);
+                document.getElementById('sdcBalance').textContent = 'Error loading';
+            }
+        }
+
+        // Open crypto modal
+        function openCryptoModal() {
+            document.getElementById('cryptoModal').classList.add('active');
+            document.getElementById('availableSDC').textContent = currentSDCBalance;
+
+            // Pre-fill wallet address if saved
+            if (userWalletAddress) {
+                document.getElementById('walletAddress').value = userWalletAddress;
+            }
+
+            // Reset views
+            document.getElementById('initialView').style.display = 'block';
+            document.getElementById('loadingView').style.display = 'none';
+            document.getElementById('successView').style.display = 'none';
+        }
+
+        // Close crypto modal
+        function closeCryptoModal() {
+            document.getElementById('cryptoModal').classList.remove('active');
+            // Reload balance
+            loadSDCBalance();
+        }
+
+        // Update conversion preview
+        function updateConversionPreview() {
+            const sdcAmount = parseFloat(document.getElementById('sdcAmount').value) || 0;
+            const walletAddress = document.getElementById('walletAddress').value.trim();
+
+            // Validate inputs
+            const isValidAmount = sdcAmount > 0 && sdcAmount <= currentSDCBalance;
+            const isValidAddress = /^0x[a-fA-F0-9]{40}$/.test(walletAddress);
+
+            // Enable/disable convert button
+            document.getElementById('convertBtn').disabled = !(isValidAmount && isValidAddress);
+
+            // Show/hide preview
+            if (isValidAmount) {
+                const maticAmount = (sdcAmount * 0.0001).toFixed(4);
+                document.getElementById('previewSDC').textContent = sdcAmount;
+                document.getElementById('previewMATIC').textContent = `${maticAmount} MATIC`;
+                document.getElementById('conversionPreview').style.display = 'block';
+            } else {
+                document.getElementById('conversionPreview').style.display = 'none';
+            }
+        }
+
+        // Convert SDC to Crypto
+        async function convertSDCToCrypto() {
+            const sdcAmount = parseInt(document.getElementById('sdcAmount').value);
+            const walletAddress = document.getElementById('walletAddress').value.trim();
+
+            // Validate
+            if (sdcAmount <= 0 || sdcAmount > currentSDCBalance) {
+                alert('Invalid SDC amount');
+                return;
+            }
+
+            if (!/^0x[a-fA-F0-9]{40}$/.test(walletAddress)) {
+                alert('Invalid wallet address. Please enter a valid Ethereum address.');
+                return;
+            }
+
+            // Show loading view
+            document.getElementById('initialView').style.display = 'none';
+            document.getElementById('loadingView').style.display = 'block';
+
+            try {
+                const response = await fetch('http://localhost:3000/api/convert-to-amoy', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        sdcAmount: sdcAmount,
+                        walletAddress: walletAddress
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || 'Conversion failed');
+                }
+
+                // Show success view
+                document.getElementById('loadingView').style.display = 'none';
+                document.getElementById('successView').style.display = 'block';
+
+                // Update success view
+                document.getElementById('successSDC').textContent = result.sdcAmount;
+                document.getElementById('successMATIC').textContent = `${result.amoyAmount} MATIC`;
+                document.getElementById('successRemaining').textContent = result.remainingSDC;
+
+                const txLink = document.getElementById('txLink');
+                txLink.href = result.explorerUrl;
+                txLink.textContent = result.txHash;
+
+                // Update current balance
+                currentSDCBalance = result.remainingSDC;
+
+            } catch (error) {
+                console.error('Conversion error:', error);
+                alert(`Conversion failed: ${error.message}`);
+
+                // Reset to initial view
+                document.getElementById('loadingView').style.display = 'none';
+                document.getElementById('initialView').style.display = 'block';
+            }
+        }
+
+        // Add input listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSDCBalance();
+
+            // Update preview when inputs change
+            document.getElementById('walletAddress').addEventListener('input', updateConversionPreview);
+        });
+
+        // Simple interaction for other demo buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('action-btn') && !e.target.onclick) {
                 alert('This feature is coming soon!');
-            });
+            }
+            if (e.target.classList.contains('store-btn') && !e.target.onclick && !e.target.classList.contains('crypto-btn')) {
+                alert('This feature is coming soon!');
+            }
         });
     </script>
 </body>

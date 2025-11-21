@@ -16,7 +16,9 @@ db.serialize(() => {
         username TEXT UNIQUE,
         password TEXT,
         email TEXT UNIQUE,
-        role TEXT DEFAULT 'student'
+        role TEXT DEFAULT 'student',
+        sdc_tokens INTEGER DEFAULT 100,
+        wallet_address TEXT
     )`);
 
     // Groups Table
@@ -77,6 +79,41 @@ db.serialize(() => {
         FOREIGN KEY(event_id) REFERENCES events(id),
         PRIMARY KEY (user_id, event_id)
     )`);
+
+    // Crypto Conversions Table
+    db.run(`CREATE TABLE IF NOT EXISTS crypto_conversions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        sdc_amount INTEGER,
+        amoy_amount TEXT,
+        wallet_address TEXT,
+        tx_hash TEXT,
+        status TEXT DEFAULT 'pending',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(user_id) REFERENCES users(id)
+    )`);
+
+    // Migration: Add sdc_tokens and wallet_address columns if they don't exist
+    db.all("PRAGMA table_info(users)", (err, columns) => {
+        const hasSDCTokens = columns.some(col => col.name === 'sdc_tokens');
+        const hasWalletAddress = columns.some(col => col.name === 'wallet_address');
+
+        if (!hasSDCTokens) {
+            db.run(`ALTER TABLE users ADD COLUMN sdc_tokens INTEGER DEFAULT 100`, (err) => {
+                if (!err) {
+                    console.log("Added sdc_tokens column to users table.");
+                    // Update existing users to have 100 SDC tokens
+                    db.run(`UPDATE users SET sdc_tokens = 100 WHERE sdc_tokens IS NULL`);
+                }
+            });
+        }
+
+        if (!hasWalletAddress) {
+            db.run(`ALTER TABLE users ADD COLUMN wallet_address TEXT`, (err) => {
+                if (!err) console.log("Added wallet_address column to users table.");
+            });
+        }
+    });
 
     // Seed Groups
     db.get("SELECT count(*) as count FROM groups", (err, row) => {
