@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Details - Sun Devil Central</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="logo">🔱 Sun Devil Central</div>
+        <ul class="top-nav-menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="groups.html">Groups</a></li>
+            <li><a href="events.html">Events</a></li>
+        </ul>
+        <div class="top-nav-right">
+            <span class="nav-icon" title="Search">🔍</span>
+            <span class="nav-icon" title="Bookmarks">🔖</span>
+            <span class="nav-icon" title="Notifications">🔔<span class="badge">3</span></span>
+            <span class="nav-icon" title="My Account">👤</span>
+        </div>
+    </nav>
+
+    <!-- Page Wrapper -->
+    <div class="page-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>Navigation</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="index.html">🏠 Home</a></li>
+                    <li><a href="groups.html" class="active">👥 All Groups</a></li>
+                    <li><a href="events.html">📅 Events</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div id="group-detail">
+                <!-- Group details will be loaded here -->
+            </div>
+        </main>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        let currentGroup = null;
+        let groupEvents = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const groupId = parseInt(getUrlParameter('id'));
+
+            if (!groupId) {
+                window.location.href = 'groups.html';
+                return;
+            }
+
+            try {
+                // Load group data from API
+                const groups = await api.get('/groups');
+                currentGroup = groups.find(g => g.id === groupId);
+
+                if (!currentGroup) {
+                    window.location.href = 'groups.html';
+                    return;
+                }
+
+                // Load events hosted by this group
+                const allEvents = await api.get('/events');
+                groupEvents = allEvents.filter(e => e.hostGroupId === groupId);
+
+                // Check auth and display
+                await auth.checkAuth();
+                await displayGroupDetail();
+            } catch (error) {
+                console.error('Error loading group:', error);
+            }
+        });
+
+        async function displayGroupDetail() {
+            const container = document.getElementById('group-detail');
+
+            let isJoined = false;
+            if (currentUser) {
+                const myGroupIds = await api.get('/my-groups');
+                isJoined = myGroupIds.includes(currentGroup.id);
+            }
+
+            const isBookmarked = loadFromStorage('bookmarks')?.groups?.includes(currentGroup.id) || false;
+
+            container.innerHTML = `
+                <!-- Back Button -->
+                <div class="mb-2">
+                    <a href="groups.html" class="btn btn-outline btn-sm">← Back to Groups</a>
+                </div>
+
+                <!-- Group Header -->
+                <div class="card mb-2">
+                    <div style="height: 200px; background: linear-gradient(135deg, var(--asu-maroon), var(--asu-gold)); border-radius: var(--radius-md) var(--radius-md) 0 0;"></div>
+                    <div style="padding: var(--spacing-lg);">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--spacing-md);">
+                            <div>
+                                <h1 style="font-size: var(--font-size-3xl); font-weight: bold; margin-bottom: var(--spacing-sm);">${currentGroup.name}</h1>
+                                <div style="display: flex; gap: var(--spacing-md); color: var(--text-secondary); margin-bottom: var(--spacing-sm);">
+                                    <span>📍 ${currentGroup.campus} Campus</span>
+                                    <span>👥 ${currentGroup.members} members</span>
+                                    <span>⭐ ${currentGroup.points} points</span>
+                                </div>
+                                <div class="tags">
+                                    ${currentGroup.categories.map(cat => `<span class="tag tag-primary">${cat}</span>`).join('')}
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: var(--spacing-sm);">
+                                <button class="btn ${isJoined ? 'btn-outline' : 'btn-primary'}" id="join-btn">
+                                    ${isJoined ? '✓ Joined' : 'Join Group'}
+                                </button>
+                                <button class="btn btn-outline" id="bookmark-btn">
+                                    ${isBookmarked ? '🔖 Bookmarked' : '🔖 Bookmark'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Section -->
+                <div class="card mb-2">
+                    <h2 class="card-title">About</h2>
+                    <div class="card-body">
+                        <p style="margin-bottom: var(--spacing-md);">${currentGroup.description}</p>
+                        <h3 style="font-weight: 600; margin-bottom: var(--spacing-sm);">Mission</h3>
+                        <p style="margin-bottom: var(--spacing-md);">${currentGroup.mission}</p>
+                        <h3 style="font-weight: 600; margin-bottom: var(--spacing-sm);">Membership Benefits</h3>
+                        <ul style="margin-left: var(--spacing-lg); color: var(--text-secondary);">
+                            ${currentGroup.benefits.map(benefit => `<li>${benefit}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="card mb-2">
+                    <h2 class="card-title">Contact Information</h2>
+                    <div class="card-body">
+                        <p><strong>Email:</strong> <a href="mailto:${currentGroup.contact}">${currentGroup.contact}</a></p>
+                        <p><strong>Website:</strong> <a href="${currentGroup.website}" target="_blank">${currentGroup.website}</a></p>
+                    </div>
+                </div>
+
+                <!-- Upcoming Events -->
+                <div class="mb-2">
+                    <div class="section-header">
+                        <h2 class="section-title">Upcoming Events</h2>
+                    </div>
+                    ${groupEvents.length > 0 ? `
+                        <div>
+                            ${groupEvents.map(event => `
+                                <div class="card event-card mb-2">
+                                    <div class="event-card-image"></div>
+                                    <div class="event-card-content">
+                                        <div class="event-card-header">
+                                            <div>
+                                                <h3 class="event-card-title">${event.title}</h3>
+                                                <div class="event-card-date">📅 ${formatDate(event.date)} at ${event.time}</div>
+                                                <div class="event-card-location">📍 ${event.location}</div>
+                                            </div>
+                                            ${event.isFree ? '<span class="event-free-tag">FREE</span>' : ''}
+                                        </div>
+                                        <p class="event-card-description">${event.description}</p>
+                                        <div class="event-card-footer">
+                                            <span class="event-spots">${event.spotsLeft} spots left</span>
+                                            <a href="event-detail.html?id=${event.id}" class="btn btn-sm btn-primary">Register</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📅</div>
+                            <h3 class="empty-state-title">No upcoming events</h3>
+                            <p class="empty-state-description">This group hasn't scheduled any events yet.</p>
+                        </div>
+                    `}
+                </div>
+            `;
+
+            // Setup event listeners
+            document.getElementById('join-btn').addEventListener('click', handleJoinClick);
+            document.getElementById('bookmark-btn').addEventListener('click', handleBookmarkClick);
+        }
+
+        async function handleJoinClick() {
+            const joined = await toggleGroupMembership(currentGroup.id);
+            if (joined) {
+                // Refresh UI to show joined state
+                displayGroupDetail();
+            }
+        }
+
+        function handleBookmarkClick() {
+            const bookmarked = toggleBookmark(currentGroup.id, 'group');
+            const btn = document.getElementById('bookmark-btn');
+            btn.textContent = bookmarked ? '🔖 Bookmarked' : '🔖 Bookmark';
+        }
+    </script>
+</body>
+
+</html>

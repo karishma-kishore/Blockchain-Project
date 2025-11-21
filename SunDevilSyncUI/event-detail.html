@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Details - Sun Devil Central</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="logo">🔱 Sun Devil Central</div>
+        <ul class="top-nav-menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="groups.html">Groups</a></li>
+            <li><a href="events.html">Events</a></li>
+        </ul>
+        <div class="top-nav-right">
+            <span class="nav-icon" title="Search">🔍</span>
+            <span class="nav-icon" title="Bookmarks">🔖</span>
+            <span class="nav-icon" title="Notifications">🔔<span class="badge">3</span></span>
+            <span class="nav-icon" title="My Account">👤</span>
+        </div>
+    </nav>
+
+    <!-- Page Wrapper -->
+    <div class="page-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>Navigation</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="index.html">🏠 Home</a></li>
+                    <li><a href="groups.html">👥 Groups</a></li>
+                    <li><a href="events.html" class="active">📅 Events</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div id="event-detail">
+                <!-- Event details will be loaded here -->
+            </div>
+        </main>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        let currentEvent = null;
+        let hostGroup = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const eventId = parseInt(getUrlParameter('id'));
+
+            if (!eventId) {
+                window.location.href = 'events.html';
+                return;
+            }
+
+            try {
+                // Load event data from API
+                const events = await api.get('/events');
+                currentEvent = events.find(e => e.id === eventId);
+
+                if (!currentEvent) {
+                    window.location.href = 'events.html';
+                    return;
+                }
+
+                // Load host group from API
+                const groups = await api.get('/groups');
+                hostGroup = groups.find(g => g.id === currentEvent.hostGroupId);
+
+                // Check auth and display
+                await auth.checkAuth();
+                await displayEventDetail();
+            } catch (error) {
+                console.error('Error loading event:', error);
+            }
+        });
+
+        async function displayEventDetail() {
+            const container = document.getElementById('event-detail');
+
+            let isRSVPd = false;
+            if (currentUser) {
+                const myEventIds = await api.get('/my-rsvps');
+                isRSVPd = myEventIds.includes(currentEvent.id);
+            }
+
+            const isBookmarked = loadFromStorage('bookmarks')?.events?.includes(currentEvent.id) || false;
+            const isFull = currentEvent.spotsLeft === 0;
+
+            container.innerHTML = `
+                <!-- Back Button -->
+                <div class="mb-2">
+                    <a href="events.html" class="btn btn-outline btn-sm">← Back to Events</a>
+                </div>
+
+                <!-- Event Header -->
+                <div class="card mb-2">
+                    <div style="height: 300px; background: linear-gradient(135deg, var(--asu-maroon), var(--asu-gold)); border-radius: var(--radius-md) var(--radius-md) 0 0; position: relative;">
+                        ${currentEvent.isFree ? '<span class="event-free-tag" style="position: absolute; top: 20px; right: 20px; font-size: var(--font-size-base);">FREE</span>' : ''}
+                    </div>
+                    <div style="padding: var(--spacing-lg);">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--spacing-md);">
+                            <div style="flex: 1;">
+                                <h1 style="font-size: var(--font-size-3xl); font-weight: bold; margin-bottom: var(--spacing-md);">${currentEvent.title}</h1>
+                                
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
+                                    <div>
+                                        <div style="font-weight: 600; color: var(--text-secondary); margin-bottom: 4px;">📅 Date & Time</div>
+                                        <div>${formatDate(currentEvent.date)}</div>
+                                        <div>${currentEvent.time} - ${currentEvent.endTime}</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 600; color: var(--text-secondary); margin-bottom: 4px;">📍 Location</div>
+                                        <div>${currentEvent.location}</div>
+                                        <div>${currentEvent.locationType} • ${currentEvent.campus}</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 600; color: var(--text-secondary); margin-bottom: 4px;">🎯 Event Type</div>
+                                        <div>${currentEvent.eventType}</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 600; color: var(--text-secondary); margin-bottom: 4px;">👥 Attendance</div>
+                                        <div>${currentEvent.attendees} going • ${currentEvent.spotsLeft} spots left</div>
+                                        ${isFull ? '<div style="color: #EF4444; font-weight: 600;">Event Full</div>' : ''}
+                                    </div>
+                                </div>
+
+                                <div class="tags">
+                                    <span class="tag tag-primary">${currentEvent.eventType}</span>
+                                    ${currentEvent.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                                </div>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: var(--spacing-sm); margin-left: var(--spacing-lg);">
+                                <button class="btn ${isRSVPd ? 'btn-outline' : 'btn-primary'} btn-lg" id="rsvp-btn" ${isFull && !isRSVPd ? 'disabled' : ''}>
+                                    ${isRSVPd ? '✓ RSVP\'d' : isFull ? 'Event Full' : 'RSVP Now'}
+                                </button>
+                                <button class="btn btn-outline" id="bookmark-btn">
+                                    ${isBookmarked ? '🔖 Bookmarked' : '🔖 Bookmark'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Description -->
+                <div class="card mb-2">
+                    <h2 class="card-title">About This Event</h2>
+                    <div class="card-body">
+                        <p style="font-size: var(--font-size-lg); line-height: 1.8;">${currentEvent.description}</p>
+                    </div>
+                </div>
+
+                <!-- Host Group -->
+                ${hostGroup ? `
+                    <div class="card mb-2">
+                        <h2 class="card-title">Hosted By</h2>
+                        <div class="card-body">
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <div>
+                                    <h3 style="font-size: var(--font-size-xl); font-weight: 600; margin-bottom: var(--spacing-xs);">${hostGroup.name}</h3>
+                                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-sm);">${hostGroup.description}</p>
+                                    <div style="color: var(--text-secondary);">
+                                        <span>📍 ${hostGroup.campus} Campus</span> • 
+                                        <span>👥 ${hostGroup.members} members</span>
+                                    </div>
+                                </div>
+                                <a href="group-detail.html?id=${hostGroup.id}" class="btn btn-primary">View Group</a>
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
+
+                <!-- Additional Info -->
+                ${currentEvent.rsvpRequired ? `
+                    <div class="card" style="border-left: 4px solid var(--asu-gold);">
+                        <div class="card-body">
+                            <strong>⚠️ RSVP Required:</strong> You must RSVP to attend this event.
+                        </div>
+                    </div>
+                ` : ''}
+            `;
+
+            // Setup event listeners
+            if (!isFull || isRSVPd) {
+                document.getElementById('rsvp-btn').addEventListener('click', handleRSVPClick);
+            }
+            document.getElementById('bookmark-btn').addEventListener('click', handleBookmarkClick);
+        }
+
+        async function handleRSVPClick() {
+            const rsvpd = await toggleEventRSVP(currentEvent.id);
+            if (rsvpd) {
+                // Refresh UI
+                // We could just update the button and counts locally for better UX
+                // But re-rendering ensures consistency
+                currentEvent.spotsLeft--;
+                currentEvent.attendees++;
+                displayEventDetail();
+            }
+        }
+
+        function handleBookmarkClick() {
+            const bookmarked = toggleBookmark(currentEvent.id, 'event');
+            const btn = document.getElementById('bookmark-btn');
+            btn.textContent = bookmarked ? '🔖 Bookmarked' : '🔖 Bookmark';
+        }
+    </script>
+</body>
+
+</html>

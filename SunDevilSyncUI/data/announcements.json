@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "title": "Sun Devils are back - we game day together!",
+        "content": "Football season is here! Join us for game day festivities, tailgating, and showing our Sun Devil pride. Wear your maroon and gold!",
+        "date": "2025-11-20",
+        "badge": "Featured",
+        "priority": "high"
+    },
+    {
+        "id": 2,
+        "title": "Homecoming at ASU",
+        "content": "Homecoming week is November 25-30! Join us for parades, concerts, spirit events, and the big game. Don't miss out on ASU's biggest celebration of the year!",
+        "date": "2025-11-18",
+        "badge": "Important",
+        "priority": "high"
+    },
+    {
+        "id": 3,
+        "title": "Spring 2026 Group Registration Opens",
+        "content": "Start planning for next semester! Group registration for Spring 2026 opens December 1st. Renew your memberships and explore new organizations.",
+        "date": "2025-11-15",
+        "badge": "Info",
+        "priority": "medium"
+    }
+]

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sun Devil Store</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-gold: #FFC627;
+            --accent-maroon: #8C1D40;
+            --gradient-primary: linear-gradient(135deg, #8C1D40 0%, #FFC627 100%);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            padding: 1.5rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .back-btn {
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .balance {
+            background: var(--gradient-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-weight: 700;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .item-card {
+            background: var(--bg-card);
+            border-radius: 1rem;
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .item-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-price {
+            color: var(--accent-gold);
+            font-weight: 700;
+        }
+
+        .buy-btn {
+            width: 100%;
+            margin-top: 1rem;
+            padding: 0.5rem;
+            background: var(--accent-maroon);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <a href="dashboard.html" class="back-btn">← Back</a>
+        <div class="balance">1,450 SDC</div>
+    </div>
+    <h1>Sun Devil Store</h1>
+    <div class="grid">
+        <div class="item-card">
+            <div class="item-title">ASU Hoodie</div>
+            <div class="item-price">2,000 SDC</div>
+            <button class="buy-btn">Buy</button>
+        </div>
+        <div class="item-card">
+            <div class="item-title">Meal Voucher</div>
+            <div class="item-price">500 SDC</div>
+            <button class="buy-btn">Buy</button>
+        </div>
+        <div class="item-card">
+            <div class="item-title">Notebook</div>
+            <div class="item-price">200 SDC</div>
+            <button class="buy-btn">Buy</button>
+        </div>
+    </div>
+</body>
+
+</html>

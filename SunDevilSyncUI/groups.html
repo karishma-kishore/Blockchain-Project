@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Groups - Sun Devil Central</title>
+    <meta name="description" content="Browse all student organizations at ASU">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="logo">🔱 Sun Devil Central</div>
+        <ul class="top-nav-menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="groups.html" class="active">Groups</a></li>
+            <li><a href="events.html">Events</a></li>
+        </ul>
+        <div class="top-nav-right">
+            <span class="nav-icon" title="Search">🔍</span>
+            <span class="nav-icon" title="Bookmarks">🔖</span>
+            <span class="nav-icon" title="Notifications">🔔<span class="badge">3</span></span>
+            <span class="nav-icon" title="My Account">👤</span>
+        </div>
+    </nav>
+
+    <!-- Page Wrapper -->
+    <div class="page-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>Navigation</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="index.html">🏠 Home</a></li>
+                    <li><a href="#">🆔 ID Card</a></li>
+                    <li><a href="#">📰 Feed</a></li>
+                    <li><a href="#">🏆 Leaderboard</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3>My Activity</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#">📅 My Schedule</a></li>
+                    <li><a href="#">👥 My Groups</a></li>
+                    <li><a href="#">🎉 My Events</a></li>
+                    <li><a href="#">📋 My Checklists</a></li>
+                    <li><a href="#">📊 My Involvement</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="section-header">
+                <h1 class="section-title">All Student Organizations</h1>
+                <span class="text-secondary" id="group-count">Loading...</span>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" id="search-input"
+                    placeholder="Search groups by name, category, or description...">
+            </div>
+
+            <!-- Filters -->
+            <div class="filters">
+                <div class="grid grid-4">
+                    <div class="filter-group">
+                        <label class="filter-label">Campus</label>
+                        <select class="filter-select" id="campus-filter">
+                            <option value="">All Campuses</option>
+                            <option value="Tempe">Tempe</option>
+                            <option value="Polytechnic">Polytechnic</option>
+                            <option value="Downtown">Downtown</option>
+                            <option value="West">West</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Category</label>
+                        <select class="filter-select" id="category-filter">
+                            <option value="">All Categories</option>
+                            <option value="Academic/Professional">Academic/Professional</option>
+                            <option value="Culture/Identity">Culture/Identity</option>
+                            <option value="Sports/Recreation">Sports/Recreation</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Arts/Creative">Arts/Creative</option>
+                            <option value="Civic Engagement">Civic Engagement</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Sort By</label>
+                        <select class="filter-select" id="sort-filter">
+                            <option value="name">Name (A-Z)</option>
+                            <option value="members">Most Members</option>
+                            <option value="points">Most Points</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">&nbsp;</label>
+                        <button class="btn btn-outline" id="clear-filters">Clear Filters</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Groups Grid -->
+            <div class="grid grid-3 mt-2" id="groups-grid">
+                <!-- Groups will be loaded here -->
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading hidden" id="loading">
+                <div class="spinner"></div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state hidden" id="empty-state">
+                <div class="empty-state-icon">🔍</div>
+                <h3 class="empty-state-title">No groups found</h3>
+                <p class="empty-state-description">Try adjusting your search or filters</p>
+                <button class="btn btn-primary" id="reset-search">Reset Search</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        let allGroups = [];
+        let filteredGroups = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                allGroups = await api.get('/groups');
+                filteredGroups = [...allGroups];
+                displayGroups(filteredGroups);
+                updateGroupCount(filteredGroups.length);
+            } catch (error) {
+                console.error('Error loading groups:', error);
+            }
+
+            // Setup event listeners
+            document.getElementById('search-input').addEventListener('input', handleSearch);
+            document.getElementById('campus-filter').addEventListener('change', applyFilters);
+            document.getElementById('category-filter').addEventListener('change', applyFilters);
+            document.getElementById('sort-filter').addEventListener('change', applyFilters);
+            document.getElementById('clear-filters').addEventListener('click', clearFilters);
+            document.getElementById('reset-search').addEventListener('click', clearFilters);
+        });
+
+        function displayGroups(groups) {
+            const grid = document.getElementById('groups-grid');
+            const emptyState = document.getElementById('empty-state');
+
+            if (groups.length === 0) {
+                grid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            grid.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+
+            grid.innerHTML = groups.map(group => `
+                <div class="card group-card">
+                    <div class="group-card-image"></div>
+                    <div class="group-card-content">
+                        <h3 class="group-card-title">${group.name}</h3>
+                        <div class="group-card-meta">
+                            <span>📍 ${group.campus}</span>
+                        </div>
+                        <p class="group-card-description">${group.description}</p>
+                        <div class="tags">
+                            ${group.categories.map(cat => `<span class="tag">${cat}</span>`).join('')}
+                        </div>
+                        <div class="group-card-footer">
+                            <span class="group-members">👥 ${group.members} members</span>
+                            <a href="group-detail.html?id=${group.id}" class="btn btn-sm btn-primary">View</a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function handleSearch(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            filteredGroups = allGroups.filter(group =>
+                group.name.toLowerCase().includes(searchTerm) ||
+                group.description.toLowerCase().includes(searchTerm) ||
+                group.categories.some(cat => cat.toLowerCase().includes(searchTerm))
+            );
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const campus = document.getElementById('campus-filter').value;
+            const category = document.getElementById('category-filter').value;
+            const sort = document.getElementById('sort-filter').value;
+
+            let filtered = [...filteredGroups];
+
+            // Apply campus filter
+            if (campus) {
+                filtered = filtered.filter(group => group.campus === campus);
+            }
+
+            // Apply category filter
+            if (category) {
+                filtered = filtered.filter(group => group.categories.includes(category));
+            }
+
+            // Apply sorting
+            if (sort === 'name') {
+                filtered.sort((a, b) => a.name.localeCompare(b.name));
+            } else if (sort === 'members') {
+                filtered.sort((a, b) => b.members - a.members);
+            } else if (sort === 'points') {
+                filtered.sort((a, b) => b.points - a.points);
+            }
+
+            displayGroups(filtered);
+            updateGroupCount(filtered.length);
+        }
+
+        function clearFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('campus-filter').value = '';
+            document.getElementById('category-filter').value = '';
+            document.getElementById('sort-filter').value = 'name';
+            filteredGroups = [...allGroups];
+            displayGroups(filteredGroups);
+            updateGroupCount(filteredGroups.length);
+        }
+
+        function updateGroupCount(count) {
+            document.getElementById('group-count').textContent = `${count} groups`;
+        }
+    </script>
+</body>
+
+</html>

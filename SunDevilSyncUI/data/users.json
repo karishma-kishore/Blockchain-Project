@@ -1,0 +1,51 @@
+{
+    "currentUser": {
+        "id": 1,
+        "name": "Alex Rivera",
+        "email": "arivera@asu.edu",
+        "major": "Computer Science",
+        "year": "Junior",
+        "campus": "Tempe",
+        "avatar": "images/avatars/user1.jpg",
+        "myGroups": [
+            1,
+            6,
+            7
+        ],
+        "myEvents": [
+            1,
+            4,
+            7,
+            8
+        ],
+        "bookmarks": [
+            2,
+            3,
+            5
+        ],
+        "points": 1250
+    },
+    "sampleUsers": [
+        {
+            "id": 2,
+            "name": "Maria Garcia",
+            "major": "Business",
+            "year": "Senior",
+            "campus": "Tempe"
+        },
+        {
+            "id": 3,
+            "name": "James Chen",
+            "major": "Engineering",
+            "year": "Sophomore",
+            "campus": "Polytechnic"
+        },
+        {
+            "id": 4,
+            "name": "Sarah Johnson",
+            "major": "Psychology",
+            "year": "Junior",
+            "campus": "Tempe"
+        }
+    ]
+}
