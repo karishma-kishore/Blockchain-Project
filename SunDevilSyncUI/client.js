@@ -4,11 +4,25 @@ const badgeAbi = require('./SunDevilBadge.json');
 const rpcUrl = process.env.AMOY_RPC_URL || process.env.POLYGON_RPC_URL;
 const rawPrivateKey = process.env.PRIVATE_KEY || process.env.ISSUER_PRIVATE_KEY;
 const contractAddress = process.env.BADGE_CONTRACT_ADDRESS;
+const sdcTokenAddress = process.env.SDC_TOKEN_ADDRESS;
 const mockEnabled = process.env.MOCK_CHAIN === 'true' || !rpcUrl || !contractAddress;
+
+// SDC Token ABI (minimal interface for client operations)
+const sdcTokenAbi = [
+    "function balanceOf(address) view returns (uint256)",
+    "function transfer(address to, uint256 amount) returns (bool)",
+    "function name() view returns (string)",
+    "function symbol() view returns (string)",
+    "function decimals() view returns (uint8)",
+    "function totalSupply() view returns (uint256)",
+    "function getUserStats(address) view returns (uint256 balance, uint256 rewards, uint256 count)",
+    "function getSupplyStats() view returns (uint256 current, uint256 minted, uint256 burned, uint256 max)"
+];
 
 let provider;
 let wallet;
 let contract;
+let sdcContract;
 let cachedNetworkLabel;
 
 const mockStore = new Map();
@@ -153,9 +167,63 @@ async function mockGetBadge(tokenId) {
     return mockStore.get(tokenId);
 }
 
+// SDC Token Functions
+function getSDCContract() {
+    if (!sdcContract && sdcTokenAddress) {
+        sdcContract = new ethers.Contract(sdcTokenAddress, sdcTokenAbi, getProvider());
+    }
+    return sdcContract;
+}
+
+function isSDCConfigured() {
+    return Boolean(sdcTokenAddress && rpcUrl);
+}
+
+async function getSDCBalance(address) {
+    if (mockEnabled || !isSDCConfigured()) {
+        return '0';
+    }
+    const contract = getSDCContract();
+    const balance = await contract.balanceOf(address);
+    return ethers.formatEther(balance);
+}
+
+async function getSDCUserStats(address) {
+    if (mockEnabled || !isSDCConfigured()) {
+        return { balance: '0', rewards: '0', count: 0 };
+    }
+    const contract = getSDCContract();
+    const stats = await contract.getUserStats(address);
+    return {
+        balance: ethers.formatEther(stats.balance),
+        rewards: ethers.formatEther(stats.rewards),
+        count: Number(stats.count)
+    };
+}
+
+async function getSDCSupplyStats() {
+    if (mockEnabled || !isSDCConfigured()) {
+        return { current: '0', minted: '0', burned: '0', max: '0' };
+    }
+    const contract = getSDCContract();
+    const stats = await contract.getSupplyStats();
+    return {
+        current: ethers.formatEther(stats.current),
+        minted: ethers.formatEther(stats.minted),
+        burned: ethers.formatEther(stats.burned),
+        max: stats.max === BigInt(0) ? 'Unlimited' : ethers.formatEther(stats.max)
+    };
+}
+
 module.exports = {
     issueBadge,
     getBadge,
     isConfigured,
-    usesMock
+    usesMock,
+    // SDC Token exports
+    isSDCConfigured,
+    getSDCBalance,
+    getSDCUserStats,
+    getSDCSupplyStats,
+    sdcTokenAddress
 };

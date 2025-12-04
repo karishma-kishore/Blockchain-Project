@@ -107,6 +107,43 @@ db.serialize(() => {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )`);
 
+    // SDC Token Claims Table (off-chain to on-chain)
+    db.run(`CREATE TABLE IF NOT EXISTS sdc_claims (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        amount INTEGER,
+        wallet_address TEXT,
+        tx_hash TEXT,
+        status TEXT DEFAULT 'pending',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(user_id) REFERENCES users(id)
+    )`);
+
+    // SDC Token Distributions Table (admin distributions)
+    db.run(`CREATE TABLE IF NOT EXISTS sdc_distributions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        wallet_address TEXT,
+        amount INTEGER,
+        reward_type TEXT,
+        reference_id TEXT,
+        tx_hash TEXT,
+        admin_id INTEGER,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(admin_id) REFERENCES users(id)
+    )`);
+
+    // SDC Token Mints Table (admin mints)
+    db.run(`CREATE TABLE IF NOT EXISTS sdc_mints (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        wallet_address TEXT,
+        amount INTEGER,
+        reason TEXT,
+        tx_hash TEXT,
+        admin_id INTEGER,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(admin_id) REFERENCES users(id)
+    )`);
+
     // Migration: Add sdc_tokens and wallet_address columns if they don't exist
     db.all("PRAGMA table_info(users)", (err, columns) => {
         const hasSDCTokens = columns.some(col => col.name === 'sdc_tokens');
