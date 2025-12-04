@@ -32,10 +32,12 @@ app.use(session({
 // Routes
 const authRoutes = require('./routes/auth');
 const apiRoutes = require('./routes/api');
+const sdcRoutes = require('./routes/sdc');
 
 app.use('/api', authRoutes);
 app.use('/api', apiRoutes);
 app.use('/api', badgeRoutes);
+app.use('/api/sdc', sdcRoutes);
 
 // Start Server
 app.listen(PORT, () => {
