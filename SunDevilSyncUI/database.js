@@ -97,6 +97,7 @@ db.serialize(() => {
     db.run(`CREATE TABLE IF NOT EXISTS minted_badges (
         token_id INTEGER PRIMARY KEY,
         student_wallet TEXT,
+        user_id INTEGER,
         event_id INTEGER,
         event_name TEXT,
         event_date TEXT,
@@ -104,8 +105,28 @@ db.serialize(() => {
         metadata_uri TEXT,
         tx_hash TEXT,
         network TEXT,
+        minted_by INTEGER,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )`);
+
+        // Backfill new columns for existing databases (safe to ignore duplicate column errors)
+    db.run(`ALTER TABLE users ADD COLUMN wallet_address TEXT`, (err) => {
+        if (err && !err.message.includes('duplicate column name')) {
+            console.error('Failed to add wallet_address column to users:', err);
+        }
+    });
+
+    db.run(`ALTER TABLE minted_badges ADD COLUMN user_id INTEGER`, (err) => {
+        if (err && !err.message.includes('duplicate column name')) {
+            console.error('Failed to add user_id column to minted_badges:', err);
+        }
+    });
+
+    db.run(`ALTER TABLE minted_badges ADD COLUMN minted_by INTEGER`, (err) => {
+        if (err && !err.message.includes('duplicate column name')) {
+            console.error('Failed to add minted_by column to minted_badges:', err);
+        }
+    });
 
     // SDC Token Claims Table (off-chain to on-chain)
     db.run(`CREATE TABLE IF NOT EXISTS sdc_claims (
@@ -229,14 +250,14 @@ db.serialize(() => {
     db.get("SELECT count(*) as count FROM users", (err, row) => {
         if (row.count === 0) {
             const passwordHash = bcrypt.hashSync('password123', 10);
-            db.run(`INSERT INTO users (username, password, email) VALUES (?, ?, ?)`,
-                ['student', passwordHash, 'student@asu.edu'],
+            db.run(`INSERT INTO users (username, password, email, wallet_address) VALUES (?, ?, ?, ?)`,
+                ['student', passwordHash, 'student@asu.edu', null],
                 (err) => {
                     if (!err) console.log("Default user 'student' created.");
                 }
             );
-            db.run(`INSERT INTO users (username, password, email) VALUES (?, ?, ?)`,
-                ['Student1', passwordHash, 'student1@asu.edu'],
+            db.run(`INSERT INTO users (username, password, email, wallet_address) VALUES (?, ?, ?, ?)`,
+                ['Student1', passwordHash, 'student1@asu.edu', null],
                 (err) => {
                     if (!err) console.log("Default user 'Student1' created.");
                 }
@@ -267,6 +288,18 @@ db.serialize(() => {
             db.run(`UPDATE users SET role = 'admin' WHERE username = ?`, ['admin'], (updateErr) => {
                 if (updateErr) console.error('Failed to elevate admin user role:', updateErr);
             });
+        }
+    });
+    // Create a default verifier for local testing
+    db.get("SELECT count(*) as count FROM users WHERE role = 'verifier'", (err, row) => {
+        if (row.count === 0) {
+            const passwordHash = bcrypt.hashSync('verifyme123', 10);
+            db.run(`INSERT INTO users (username, password, email, role, wallet_address) VALUES (?, ?, ?, ?, ?)`,
+                ['verifier', passwordHash, 'verifier@asu.edu', 'verifier', null],
+                (err) => {
+                    if (!err) console.log("Default verifier 'verifier' created (password: verifyme123).");
+                }
+            );
         }
     });
 });

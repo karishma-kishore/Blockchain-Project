@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal - Sun Devil Central</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.11.1/ethers.umd.min.js"></script>
+</head>
+
+<body>
+    <nav class="top-nav"></nav>
+
+    <div class="page-wrapper">
+        <main class="main-content">
+            <section class="hero">
+                <h1 class="hero-title" id="portal-title">Portal</h1>
+                <p class="hero-subtitle" id="portal-subtitle">Access tools based on your role.</p>
+            </section>
+
+            <div id="login-required" class="card" style="display: none; margin-top: var(--spacing-lg);">
+                <div class="card-body">
+                    <p>You need to log in to use the portal.</p>
+                    <button class="btn btn-primary" id="portal-login-btn">Login</button>
+                </div>
+            </div>
+
+            <div id="student-portal" style="display: none; margin-top: var(--spacing-lg);">
+                <div class="section-header">
+                    <h2 class="section-title">Student Tools</h2>
+                    <a href="events.html" class="section-link">Browse Events →</a>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Wallet</h3>
+                        <span class="text-secondary">Used for badge mints</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-secondary" id="wallet-display">No wallet linked.</p>
+                        <button type="button" class="btn btn-primary" id="connect-metamask">Link MetaMask Wallet</button>
+                        <p class="text-secondary" style="margin-top: var(--spacing-sm);">Enrollments mint an
+                            <strong>Enrolled</strong> badge to this address. Verifiers will issue
+                            <strong>Attended</strong> badges after checking you in.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="verifier-portal" style="display: none; margin-top: var(--spacing-lg);">
+                <div class="section-header">
+                    <h2 class="section-title">Verifier Tools</h2>
+                    <span class="text-secondary">Validate enrolled badges and issue attended badges</span>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Lookup Enrolled Badge</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="enrollment-lookup-form" class="form">
+                                <div class="form-group">
+                                    <label for="enrollment-token-id">Enrollment Token ID</label>
+                                    <input type="number" id="enrollment-token-id" min="1" required>
+                                </div>
+                                <button type="submit" class="btn-primary">Verify Enrollment</button>
+                                <span id="enrollment-status" class="text-secondary" style="margin-left: 8px;"></span>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div id="enrollment-result">
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="text-secondary">Results will appear here after lookup.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="admin-portal" style="display: none; margin-top: var(--spacing-lg);">
+                <div class="section-header">
+                    <h2 class="section-title">Admin Shortcuts</h2>
+                </div>
+                <a href="admin.html" class="btn btn-primary">Open Minting Console</a>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            await (window.authReady || auth.checkAuth());
+            if (!currentUser) {
+                document.getElementById('login-required').style.display = 'block';
+                document.getElementById('portal-login-btn').onclick = () => {
+                    const btn = document.getElementById('login-btn');
+                    if (btn) btn.click();
+                };
+                return;
+            }
+
+            document.getElementById('portal-title').textContent = `${currentUser.role || 'Student'} Portal`;
+            document.getElementById('portal-subtitle').textContent = `Signed in as ${currentUser.username}`;
+
+            // Student view
+            document.getElementById('student-portal').style.display = 'block';
+            renderWallet(null); // show unlinked by default
+            document.getElementById('connect-metamask').addEventListener('click', linkMetaMask);
+            if (new URLSearchParams(window.location.search).get('linkWallet') === '1') {
+                linkMetaMask();
+            }
+
+            // Verifier view
+            if (currentUser.role === 'verifier' || currentUser.role === 'admin') {
+                document.getElementById('verifier-portal').style.display = 'block';
+                setupVerifierForm();
+            }
+
+            // Admin shortcut
+            if (currentUser.role === 'admin') {
+                document.getElementById('admin-portal').style.display = 'block';
+            }
+        });
+
+        function setupVerifierForm() {
+            const form = document.getElementById('enrollment-lookup-form');
+            const tokenInput = document.getElementById('enrollment-token-id');
+            const statusEl = document.getElementById('enrollment-status');
+            const resultEl = document.getElementById('enrollment-result');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const tokenId = tokenInput.value.trim();
+                if (!tokenId) return;
+                statusEl.textContent = 'Looking up...';
+                const badge = await api.get(`/badges/${tokenId}`);
+                if (!badge) {
+                    statusEl.textContent = 'Not found.';
+                    resultEl.innerHTML = `<div class="card"><div class="card-body"><p class="text-secondary">Badge not found.</p></div></div>`;
+                    return;
+                }
+                statusEl.textContent = '';
+                renderEnrollmentResult(badge, resultEl);
+            });
+        }
+
+        function renderEnrollmentResult(badge, container) {
+            const issuedDate = badge.issuedAt ? new Date(badge.issuedAt * 1000).toLocaleString() : 'N/A';
+            container.innerHTML = `
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Enrollment Badge #${badge.tokenId}</h3>
+                        <span class="tag tag-secondary">${badge.network || 'unknown'}</span>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Event:</strong> ${badge.eventName} (ID: ${badge.eventId})</p>
+                        <p><strong>Achievement:</strong> ${badge.achievementType}</p>
+                        <p><strong>Metadata URI:</strong> <a href="${badge.metadataURI}" target="_blank" rel="noopener">${badge.metadataURI}</a></p>
+                        <p><strong>Issued At:</strong> ${issuedDate}</p>
+                        ${badge.transactionHash ? `<p><strong>Tx:</strong> <a href="https://amoy.polygonscan.com/tx/${badge.transactionHash}" target="_blank" rel="noopener">${badge.transactionHash}</a></p>` : ''}
+                        <button class="btn btn-primary" id="attend-btn">Mint Attended Badge</button>
+                        <span id="attend-status" class="text-secondary" style="margin-left: 8px;"></span>
+                    </div>
+                </div>
+            `;
+
+            const attendBtn = document.getElementById('attend-btn');
+            const attendStatus = document.getElementById('attend-status');
+            attendBtn.addEventListener('click', async () => {
+                attendStatus.textContent = 'Minting...';
+                const result = await api.post('/badges/attend', { enrollmentTokenId: badge.tokenId });
+                if (!result) {
+                    attendStatus.textContent = '';
+                    return;
+                }
+                const txLink = result.transactionHash ? `<a href="https://amoy.polygonscan.com/tx/${result.transactionHash}" target="_blank" rel="noopener">${result.transactionHash}</a>` : 'n/a';
+                attendStatus.innerHTML = `Minted attended badge #${result.tokenId} — ${txLink}`;
+                showToast('Attended badge minted', 'success');
+                if (result.sdcReward && result.sdcReward.amount) {
+                    addSdcHistory({
+                        type: 'reward',
+                        amount: result.sdcReward.amount,
+                        hash: result.sdcReward.hash,
+                        network: result.sdcReward.network,
+                        detail: 'Attendance reward'
+                    });
+                    document.dispatchEvent(new CustomEvent('sdc:historyUpdated'));
+                    document.dispatchEvent(new CustomEvent('sdc:balanceMaybeChanged'));
+                }
+            });
+        }
+
+        async function linkMetaMask() {
+            if (!window.ethereum) {
+                showToast('MetaMask not found. Install the extension.', 'error');
+                return;
+            }
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const addr = accounts && accounts[0];
+                if (!addr) return;
+                const result = await api.post('/me/wallet', { wallet: addr });
+                if (result && result.wallet) {
+                    currentUser.wallet_address = result.wallet;
+                    auth.updateUI();
+                    renderWallet(result.wallet);
+                    showToast('MetaMask wallet linked', 'success');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Failed to link MetaMask', 'error');
+            }
+        }
+
+        function renderWallet(wallet) {
+            const display = document.getElementById('wallet-display');
+            display.textContent = wallet ? `Linked: ${wallet}` : 'No wallet linked.';
+        }
+    </script>
+</body>
+
+</html>

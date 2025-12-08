@@ -1,0 +1,30 @@
+{
+  "network": "polygon_amoy",
+  "deployer": "0x5989585eDc64808ca7B4c03ab9353A4e5e7115B7",
+  "backendMinter": "0x5989585eDc64808ca7B4c03ab9353A4e5e7115B7",
+  "contracts": {
+    "SDCToken": {
+      "address": "0x27bC8e0700f5c9C767e8474FBe729094C39FF299",
+      "name": "SunDevilSync Coin",
+      "symbol": "SDC",
+      "initialSupply": 1000000,
+      "maxSupply": 100000000
+    },
+    "AchievementSBT": {
+      "address": "0xa5B09d88fdFa92c0bcD2718440B4449CD961972a",
+      "name": "SunDevilSync Achievement",
+      "symbol": "SDS-ACH"
+    },
+    "Collectible721": {
+      "address": "0x95F3fa1E876EB8e82954A7637742044869352F7F",
+      "name": "SunDevilSync Collectible",
+      "symbol": "SDS-COL"
+    },
+    "SunDevilBadge": {
+      "address": "0x2fEd0F5292539d940C27224188C046460B66e484",
+      "name": "SunDevil Badge",
+      "symbol": "SDB"
+    }
+  },
+  "deployedAt": "2025-12-08T08:54:18.843Z"
+}

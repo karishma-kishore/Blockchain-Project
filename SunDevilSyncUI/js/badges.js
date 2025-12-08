@@ -73,7 +73,8 @@ function renderBadgeDetails(container, badge) {
                 <p><strong>Achievement:</strong> ${badge.achievementType}</p>
                 <p><strong>Issued At:</strong> ${formatTimestamp(badge.issuedAt)}</p>
                 <p><strong>Issuer:</strong> ${badge.issuer}</p>
-                <p><strong>Metadata:</strong> <a href="${badge.tokenURI || badge.metadataURI}" target="_blank" rel="noreferrer">${badge.tokenURI || badge.metadataURI}</a></p>
+                <p><strong>Metadata (event link):</strong> <a href="${badge.tokenURI || badge.metadataURI}" target="_blank" rel="noreferrer">${badge.tokenURI || badge.metadataURI}</a></p>
+                ${badge.transactionHash ? `<p><strong>Tx:</strong> <a href="https://amoy.polygonscan.com/tx/${badge.transactionHash}" target="_blank" rel="noreferrer">${badge.transactionHash}</a></p>` : ''}
             </div>
         </div>
     `;
@@ -96,13 +97,47 @@ function renderBadgeList(container, badges) {
                 </div>
                 <div class="card-body">
                     <p><strong>Student:</strong> ${badge.student_wallet}</p>
+                    <p><strong>Badge ID (use for verification):</strong> ${badge.token_id}</p>
                     <p><strong>Event:</strong> ${badge.event_name} (ID: ${badge.event_id}) on ${badge.event_date}</p>
                     <p><strong>Achievement:</strong> ${badge.achievement_type}</p>
-                    <p><strong>Metadata:</strong> <a href="${badge.metadata_uri}" target="_blank" rel="noreferrer">${badge.metadata_uri}</a></p>
+                    <p><strong>Metadata (event link):</strong> <a href="${badge.metadata_uri}" target="_blank" rel="noreferrer">${badge.metadata_uri}</a></p>
                     <p><strong>Minted:</strong> ${mintedAt}</p>
                     <div style="margin-top: 8px;">
                         <a class="btn btn-outline" href="verify.html?token=${badge.token_id}">Verify</a>
                         ${badge.tx_hash ? `<a class="btn btn-secondary" style="margin-left: 8px;" href="https://amoy.polygonscan.com/tx/${badge.tx_hash}" target="_blank" rel="noreferrer">View Tx</a>` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderMyBadges(container, badges) {
+    if (!container) return;
+    if (!badges || badges.length === 0) {
+        container.innerHTML = `<p class="text-secondary">No badges yet. Enroll in an event to earn one.</p>`;
+        return;
+    }
+    container.innerHTML = badges.map((badge) => {
+        const mintedAt = badge.created_at ? new Date(badge.created_at).toLocaleString() : 'N/A';
+        const network = badge.network || 'mock';
+        const txLink = badge.tx_hash ? (network.toLowerCase().includes('amoy') ? `https://amoy.polygonscan.com/tx/${badge.tx_hash}` : badge.tx_hash) : null;
+        return `
+            <div class="card" style="margin-bottom: var(--spacing-md);">
+                <div class="card-header">
+                    <h3 class="card-title">Badge #${badge.token_id}</h3>
+                    <span class="badge badge-secondary">${badge.achievement_type}</span>
+                    <span class="badge badge-secondary">${network}</span>
+                </div>
+                <div class="card-body">
+                    <p><strong>Badge ID (use for verification):</strong> ${badge.token_id}</p>
+                    <p><strong>Event:</strong> ${badge.event_name} (ID: ${badge.event_id})</p>
+                    <p><strong>Date:</strong> ${badge.event_date}</p>
+                    <p><strong>Metadata (event link):</strong> <a href="${badge.metadata_uri}" target="_blank" rel="noreferrer">${badge.metadata_uri}</a></p>
+                    <p><strong>Minted:</strong> ${mintedAt}</p>
+                    <div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
+                        <a class="btn btn-outline" href="verify.html?token=${badge.token_id}">Verify</a>
+                        ${txLink ? `<a class="btn btn-secondary" href="${txLink}" target="_blank" rel="noreferrer">Tx</a>` : ''}
                     </div>
                 </div>
             </div>
@@ -196,11 +231,74 @@ async function loadMintedBadges(container) {
     renderBadgeList(container, badges || []);
 }
 
+async function loadMyBadges(container, section) {
+    if (!container || !window.api) return;
+    if (!section) section = container.closest('section');
+    if (section) section.style.display = 'block';
+    container.innerHTML = '<p class="text-secondary">Loading your badges...</p>';
+    const badges = await window.api.get('/my-badges', { suppressToast: true });
+    if (!badges) {
+        container.innerHTML = '<p class="text-secondary">Login to view your badges.</p>';
+        if (section) section.style.display = 'none';
+        return;
+    }
+    renderMyBadges(container, badges);
+}
+
+function renderLoginRequired(container) {
+    if (container) {
+        container.innerHTML = `<p class="text-secondary">Please login to view badges.</p>`;
+    }
+}
+
+async function loadBadgesForRole() {
+    const badgeListContainer = document.getElementById('badge-list');
+    const myBadgeContainer = document.getElementById('my-badges-list');
+    const myBadgeSection = document.getElementById('my-badges-section');
+    const heading = document.getElementById('badges-heading');
+
+    await (window.authReady || auth.checkAuth());
+    const user = window.getCurrentUser ? window.getCurrentUser() : window.currentUser;
+    if (!user) {
+        renderLoginRequired(badgeListContainer || myBadgeContainer);
+        if (myBadgeSection) myBadgeSection.style.display = 'none';
+        if (heading) heading.textContent = 'Please login to view badges';
+        return;
+    }
+
+    const role = user.role || 'student';
+    if (role === 'admin') {
+        if (heading) heading.textContent = 'All Minted Badges';
+        // Admin: show all badges ever issued
+        if (myBadgeSection) myBadgeSection.style.display = 'none';
+        if (badgeListContainer) {
+            badgeListContainer.innerHTML = '<p class="text-secondary">Loading badges...</p>';
+            const badges = await window.api.get('/badges');
+            renderBadgeList(badgeListContainer, badges || []);
+        }
+    } else if (role === 'verifier') {
+        if (heading) heading.textContent = 'All Verified Badges';
+        // Verifier: show badges minted/verified by them
+        if (myBadgeSection) myBadgeSection.style.display = 'none';
+        if (badgeListContainer) {
+            badgeListContainer.innerHTML = '<p class="text-secondary">Loading your verified badges...</p>';
+            const badges = await window.api.get('/badges/issued-by-me');
+            renderBadgeList(badgeListContainer, badges || []);
+        }
+    } else {
+        if (heading) heading.textContent = 'All Badges';
+        // Student/default: show only their badges
+        if (badgeListContainer) badgeListContainer.innerHTML = '';
+        if (myBadgeSection) myBadgeSection.style.display = 'block';
+        if (myBadgeContainer) {
+            await loadMyBadges(myBadgeContainer, myBadgeSection);
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     initBadgeStatus();
-
-    const badgeListContainer = document.getElementById('badge-list');
-    loadMintedBadges(badgeListContainer);
-    setupMintForm(badgeListContainer);
+    setupMintForm(document.getElementById('badge-list'));
     setupLookupForm();
+    loadBadgesForRole();
 });

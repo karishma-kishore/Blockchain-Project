@@ -84,7 +84,7 @@ async function issueBadge(params) {
 
     const tx = await signer.issueBadge(student, eventId, eventName, eventDate, achievementType, metadataURI);
     const receipt = await tx.wait();
-    const tokenId = Number(await signer.totalMinted());
+    const tokenId = await extractMintedTokenId(receipt);
 
     return {
         tokenId,
@@ -213,6 +213,34 @@ async function getSDCSupplyStats() {
         burned: ethers.formatEther(stats.burned),
         max: stats.max === BigInt(0) ? 'Unlimited' : ethers.formatEther(stats.max)
     };
+}
+
+async function extractMintedTokenId(receipt) {
+    // Prefer decoding events to avoid an extra RPC call; fallback to totalMinted if needed.
+    try {
+        const iface = new ethers.Interface(badgeAbi);
+        for (const log of receipt.logs) {
+            try {
+                const parsed = iface.parseLog(log);
+                // ERC721 Transfer(address,address,uint256)
+                if (parsed.name === 'Transfer') {
+                    return Number(parsed.args.tokenId);
+                }
+                if (parsed.name === 'BadgeIssued') {
+                    return Number(parsed.args.tokenId);
+                }
+            } catch {
+                // ignore logs from other contracts
+            }
+        }
+    } catch {
+        // ignore and fallback
+    }
+
+    // Fallback to totalMinted call if events were not found
+    const signer = getContract(true);
+    const total = await signer.totalMinted();
+    return Number(total);
 }
 
 module.exports = {

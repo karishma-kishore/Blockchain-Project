@@ -488,21 +488,63 @@
     </style>
 </head>
 
-<body>
+<body data-disable-nav="true">
     <header class="header">
         <div class="logo">🔱 Sun Devil Crypto</div>
-        <button class="close-btn" onclick="window.location.href='index.html'">✕</button>
+        <button class="close-btn" id="close-btn">✕</button>
     </header>
 
     <div class="container">
         <!-- Wallet Card -->
         <div class="wallet-card">
             <div class="balance-label">Total Balance</div>
-            <div class="balance-amount" id="sdcBalance">Loading...</div>
+            <div class="balance-amount" id="sdcBalance">-- SDC</div>
+            <div style="margin-bottom: 0.5rem; color: rgba(255,255,255,0.8);">
+                Wallet: <span id="sdc-wallet">Not set</span>
+            </div>
             <div class="wallet-actions">
-                <button class="action-btn">Send</button>
-                <button class="action-btn">Receive</button>
-                <button class="action-btn" onclick="window.location.href='#'">History</button>
+                <button class="action-btn" id="send-toggle">Send</button>
+                <button class="action-btn" id="receive-toggle">Receive</button>
+                <button class="action-btn" id="link-metamask">Link MetaMask</button>
+            </div>
+            <div id="wallet-hint" class="text-secondary" style="margin-top: 0.5rem; font-size: 0.9rem;"></div>
+        </div>
+
+        <div id="send-card" class="card" style="background: var(--bg-card); border: 1px solid var(--glass-border); margin-bottom: 1.5rem; padding: 1rem; display: none;">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 class="card-title">Send SDC</h3>
+                    <p class="text-secondary">Transfers are on-chain (SDC token)</p>
+                </div>
+            </div>
+            <div class="card-body">
+                <form id="send-form" class="form" style="display: grid; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="send-to">Recipient Wallet</label>
+                        <input type="text" id="send-to" placeholder="0x..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="send-amount">Amount (SDC)</label>
+                        <input type="number" step="0.0001" min="0" id="send-amount" required>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                        <button type="submit" class="action-btn" style="background: var(--accent-gold); color: var(--bg-dark);">Send</button>
+                        <span id="send-status" class="text-secondary"></span>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="receive-card" class="card" style="background: var(--bg-card); border: 1px solid var(--glass-border); margin-bottom: 1.5rem; padding: 1rem; display: none;">
+            <div class="card-header">
+                <h3 class="card-title">Receive SDC</h3>
+            </div>
+            <div class="card-body">
+                <p class="text-secondary">Share your wallet to receive SDC.</p>
+                <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                    <code id="receive-wallet" style="background: rgba(255,255,255,0.08); padding: 0.5rem 0.75rem; border-radius: 0.5rem;">Not set</code>
+                    <button class="action-btn" id="copy-wallet" style="background: rgba(255,255,255,0.2);">Copy</button>
+                </div>
             </div>
         </div>
 
@@ -553,6 +595,11 @@
             <div class="earn-reward">+100 SDC</div>
         </div>
 
+        <div class="section-header">
+            <h2 class="section-title">History</h2>
+        </div>
+        <div id="history-list"></div>
+
         <!-- Store Preview -->
         <div class="section-header">
             <h2 class="section-title">Sun Devil Store</h2>
@@ -564,20 +611,6 @@
                 <div style="color: var(--text-secondary); font-size: 0.875rem;">Convert SDC to Polygon Amoy</div>
             </div>
             <button class="store-btn crypto-btn" onclick="openCryptoModal()">Convert</button>
-        </div>
-        <div class="store-item">
-            <div>
-                <div style="font-weight: 600;">ASU Hoodie</div>
-                <div style="color: var(--text-secondary); font-size: 0.875rem;">Limited Edition</div>
-            </div>
-            <button class="store-btn">2,000 SDC</button>
-        </div>
-        <div class="store-item">
-            <div>
-                <div style="font-weight: 600;">Cafeteria Meal Voucher</div>
-                <div style="color: var(--text-secondary); font-size: 0.875rem;">Valid at all locations</div>
-            </div>
-            <button class="store-btn">500 SDC</button>
         </div>
     </div>
 
@@ -699,6 +732,7 @@
         </div>
     </div>
 
+    <script src="js/main.js"></script>
     <script>
         let currentSDCBalance = 0;
         let userWalletAddress = null;
@@ -719,11 +753,13 @@
                 }
 
                 const data = await response.json();
-                currentSDCBalance = data.sdcTokens || 0;
                 userWalletAddress = data.walletAddress;
+                const onChain = data.onChain && data.onChain.balance ? Number(data.onChain.balance) / Math.pow(10, data.onChain.decimals || 18) : null;
+                currentSDCBalance = onChain !== null ? onChain : (data.sdcTokens || 0);
 
                 // Update display
                 document.getElementById('sdcBalance').textContent = `${currentSDCBalance.toLocaleString()} SDC`;
+                renderWallet(userWalletAddress);
             } catch (error) {
                 console.error('Error loading balance:', error);
                 document.getElementById('sdcBalance').textContent = 'Error loading';
@@ -830,6 +866,14 @@
 
                 // Update current balance
                 currentSDCBalance = result.remainingSDC;
+                addSdcHistory({
+                    type: 'conversion',
+                    amount: result.sdcAmount,
+                    matic: result.amoyAmount,
+                    hash: result.txHash,
+                    network: 'amoy'
+                });
+                document.dispatchEvent(new CustomEvent('sdc:historyUpdated'));
 
             } catch (error) {
                 console.error('Conversion error:', error);
@@ -842,22 +886,181 @@
         }
 
         // Add input listeners
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            document.body.dataset.disableNav = 'true'; // keep dashboard standalone
+
+            // Ensure auth
+            await (window.authReady || auth.checkAuth());
+            if (!currentUser) {
+                showToast('Please login to view your dashboard', 'error');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Prefill wallet display
+            userWalletAddress = currentUser.wallet_address || null;
+            renderWallet(userWalletAddress);
             loadSDCBalance();
+            renderHistory();
 
             // Update preview when inputs change
             document.getElementById('walletAddress').addEventListener('input', updateConversionPreview);
+
+            // Toggle sections
+            const sendCard = document.getElementById('send-card');
+            const receiveCard = document.getElementById('receive-card');
+            document.getElementById('send-toggle').addEventListener('click', () => {
+                sendCard.style.display = 'block';
+                receiveCard.style.display = 'none';
+            });
+            document.getElementById('receive-toggle').addEventListener('click', () => {
+                receiveCard.style.display = 'block';
+                sendCard.style.display = 'none';
+            });
+
+            document.getElementById('send-form').addEventListener('submit', handleSend);
+            document.getElementById('link-metamask').addEventListener('click', () => {
+                window.location.href = 'portal.html?linkWallet=1';
+            });
+            document.getElementById('copy-wallet').addEventListener('click', copyWallet);
+
+            document.addEventListener('sdc:historyUpdated', renderHistory);
+            document.addEventListener('sdc:balanceMaybeChanged', () => {
+                loadSDCBalance();
+            });
+
+            // Close button navigates back
+            document.getElementById('close-btn').addEventListener('click', () => {
+                window.history.length > 1 ? window.history.back() : window.location.href = 'index.html';
+            });
         });
 
-        // Simple interaction for other demo buttons
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('action-btn') && !e.target.onclick) {
-                alert('This feature is coming soon!');
+        async function handleSend(e) {
+            e.preventDefault();
+            const to = document.getElementById('send-to').value.trim();
+            const amount = Number(document.getElementById('send-amount').value);
+            const statusEl = document.getElementById('send-status');
+
+            if (!userWalletAddress) {
+                showToast('Link your wallet first', 'error');
+                return;
             }
-            if (e.target.classList.contains('store-btn') && !e.target.onclick && !e.target.classList.contains('crypto-btn')) {
-                alert('This feature is coming soon!');
+            if (!/^0x[a-fA-F0-9]{40}$/.test(to)) {
+                showToast('Enter a valid recipient address', 'error');
+                return;
             }
-        });
+            if (!Number.isFinite(amount) || amount <= 0) {
+                showToast('Enter a valid amount', 'error');
+                return;
+            }
+            statusEl.textContent = 'Sending...';
+            const res = await api.post('/sdc/transfer', { to, amount });
+            if (!res) {
+                statusEl.textContent = '';
+                return;
+            }
+            statusEl.textContent = 'Sent!';
+            showToast('Transfer sent', 'success');
+            addSdcHistory({ type: 'sent', to, amount, hash: res.hash, network: res.network });
+            document.dispatchEvent(new CustomEvent('sdc:historyUpdated'));
+            document.dispatchEvent(new CustomEvent('sdc:balanceMaybeChanged'));
+            loadSDCBalance();
+        }
+
+        async function linkMetaMask() {
+            if (!window.ethereum) {
+                showToast('MetaMask not found. Install the extension.', 'error');
+                return;
+            }
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const addr = accounts && accounts[0];
+                if (!addr) return;
+                const result = await api.post('/me/wallet', { wallet: addr });
+                if (result && result.wallet) {
+                    currentUser.wallet_address = result.wallet;
+                    userWalletAddress = result.wallet;
+                    renderWallet(result.wallet);
+                    document.getElementById('walletAddress').value = result.wallet;
+                    updateConversionPreview();
+                    showToast('MetaMask wallet linked', 'success');
+                    document.dispatchEvent(new CustomEvent('sdc:balanceMaybeChanged'));
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Failed to link MetaMask', 'error');
+            }
+        }
+
+        function renderWallet(wallet) {
+            const display = document.getElementById('sdc-wallet');
+            const recv = document.getElementById('receive-wallet');
+            const hint = document.getElementById('wallet-hint');
+            if (wallet) {
+                display.textContent = wallet;
+                recv.textContent = wallet;
+                hint.textContent = 'Linked to your MetaMask wallet.';
+            } else {
+                display.textContent = 'Not set';
+                recv.textContent = 'Not set';
+                hint.textContent = 'Link MetaMask to send and receive SDC.';
+            }
+        }
+
+        function copyWallet() {
+            if (!userWalletAddress) {
+                showToast('No wallet linked yet', 'error');
+                return;
+            }
+            navigator.clipboard.writeText(userWalletAddress).then(() => {
+                showToast('Wallet copied', 'success');
+            }).catch(() => {
+                showToast('Copy failed', 'error');
+            });
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('history-list');
+            const history = (window.getSdcHistory && getSdcHistory()) || [];
+            if (!history.length) {
+                container.innerHTML = `<p class="text-secondary">No transactions yet.</p>`;
+                return;
+            }
+            container.innerHTML = history.map(entry => {
+                const ts = new Date(entry.ts || Date.now()).toLocaleString();
+                let title = 'Activity';
+                let detail = '';
+                if (entry.type === 'sent') {
+                    title = 'Sent SDC';
+                    detail = `${entry.amount} SDC to ${entry.to || 'unknown'}`;
+                } else if (entry.type === 'reward') {
+                    title = 'Reward';
+                    detail = `${entry.amount} SDC earned`;
+                } else if (entry.type === 'conversion') {
+                    title = 'Converted';
+                    detail = `${entry.amount} SDC → ${entry.matic || '?'} MATIC`;
+                } else {
+                    detail = entry.detail || '';
+                }
+                const hash = entry.hash ? `<a class="tx-link" target="_blank" rel="noopener" href="${entry.network && entry.network.toLowerCase().includes('amoy') ? `https://amoy.polygonscan.com/tx/${entry.hash}` : '#'}">${entry.hash}</a>` : '';
+                return `
+                    <div class="card" style="background: var(--bg-card); border: 1px solid var(--glass-border); margin-bottom: 0.75rem;">
+                        <div class="card-body">
+                            <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                <div>
+                                    <div style="font-weight: 700;">${title}</div>
+                                    <div style="color: var(--text-secondary); font-size: 0.9rem;">${detail}</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="color: var(--text-secondary); font-size: 0.8rem;">${ts}</div>
+                                    ${hash ? `<div style="font-size: 0.8rem;">${hash}</div>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
     </script>
 </body>
 

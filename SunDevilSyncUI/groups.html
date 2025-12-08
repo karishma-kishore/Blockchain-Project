@@ -30,102 +30,86 @@
         </div>
     </nav>
 
-    <!-- Page Wrapper -->
     <div class="page-wrapper">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-section">
-                <h3>Navigation</h3>
-                <ul class="sidebar-menu">
-                    <li><a href="index.html">🏠 Home</a></li>
-                    <li><a href="#">🆔 ID Card</a></li>
-                    <li><a href="#">📰 Feed</a></li>
-                    <li><a href="#">🏆 Leaderboard</a></li>
-                </ul>
-            </div>
-            <div class="sidebar-section">
-                <h3>My Activity</h3>
-                <ul class="sidebar-menu">
-                    <li><a href="#">📅 My Schedule</a></li>
-                    <li><a href="#">👥 My Groups</a></li>
-                    <li><a href="#">🎉 My Events</a></li>
-                    <li><a href="#">📋 My Checklists</a></li>
-                    <li><a href="#">📊 My Involvement</a></li>
-                </ul>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
         <main class="main-content">
             <div class="section-header">
-                <h1 class="section-title">All Student Organizations</h1>
+                <h1 class="section-title">Student Organizations</h1>
                 <span class="text-secondary" id="group-count">Loading...</span>
             </div>
 
-            <!-- Search Bar -->
-            <div class="search-bar">
-                <span class="search-icon">🔍</span>
-                <input type="text" class="search-input" id="search-input"
-                    placeholder="Search groups by name, category, or description...">
-            </div>
+            <section class="mb-3" id="my-groups-section" style="display: none;">
+                <div class="section-header">
+                    <h2 class="section-title">My Groups</h2>
+                    <span class="text-secondary" id="my-group-count"></span>
+                </div>
+                <div class="grid grid-3" id="my-groups-grid"></div>
+            </section>
 
-            <!-- Filters -->
-            <div class="filters">
-                <div class="grid grid-4">
-                    <div class="filter-group">
-                        <label class="filter-label">Campus</label>
-                        <select class="filter-select" id="campus-filter">
-                            <option value="">All Campuses</option>
-                            <option value="Tempe">Tempe</option>
-                            <option value="Polytechnic">Polytechnic</option>
-                            <option value="Downtown">Downtown</option>
-                            <option value="West">West</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">Category</label>
-                        <select class="filter-select" id="category-filter">
-                            <option value="">All Categories</option>
-                            <option value="Academic/Professional">Academic/Professional</option>
-                            <option value="Culture/Identity">Culture/Identity</option>
-                            <option value="Sports/Recreation">Sports/Recreation</option>
-                            <option value="Technology">Technology</option>
-                            <option value="Arts/Creative">Arts/Creative</option>
-                            <option value="Civic Engagement">Civic Engagement</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">Sort By</label>
-                        <select class="filter-select" id="sort-filter">
-                            <option value="name">Name (A-Z)</option>
-                            <option value="members">Most Members</option>
-                            <option value="points">Most Points</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">&nbsp;</label>
-                        <button class="btn btn-outline" id="clear-filters">Clear Filters</button>
+            <section class="mb-3">
+                <div class="section-header">
+                    <h2 class="section-title">All Groups</h2>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" id="search-input"
+                        placeholder="Search groups by name, category, or description...">
+                </div>
+
+                <!-- Filters -->
+                <div class="filters">
+                    <div class="grid grid-4">
+                        <div class="filter-group">
+                            <label class="filter-label">Campus</label>
+                            <select class="filter-select" id="campus-filter">
+                                <option value="">All Campuses</option>
+                                <option value="Tempe">Tempe</option>
+                                <option value="Polytechnic">Polytechnic</option>
+                                <option value="Downtown">Downtown</option>
+                                <option value="West">West</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Category</label>
+                            <select class="filter-select" id="category-filter">
+                                <option value="">All Categories</option>
+                                <option value="Academic/Professional">Academic/Professional</option>
+                                <option value="Culture/Identity">Culture/Identity</option>
+                                <option value="Sports/Recreation">Sports/Recreation</option>
+                                <option value="Technology">Technology</option>
+                                <option value="Arts/Creative">Arts/Creative</option>
+                                <option value="Civic Engagement">Civic Engagement</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Sort By</label>
+                            <select class="filter-select" id="sort-filter">
+                                <option value="name">Name (A-Z)</option>
+                                <option value="members">Most Members</option>
+                                <option value="points">Most Points</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">&nbsp;</label>
+                            <button class="btn btn-outline" id="clear-filters">Clear Filters</button>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Groups Grid -->
-            <div class="grid grid-3 mt-2" id="groups-grid">
-                <!-- Groups will be loaded here -->
-            </div>
+                <!-- Groups Grid -->
+                <div class="grid grid-3 mt-2" id="all-groups-grid">
+                    <!-- Groups will be loaded here -->
+                </div>
 
-            <!-- Loading State -->
-            <div class="loading hidden" id="loading">
-                <div class="spinner"></div>
-            </div>
-
-            <!-- Empty State -->
-            <div class="empty-state hidden" id="empty-state">
-                <div class="empty-state-icon">🔍</div>
-                <h3 class="empty-state-title">No groups found</h3>
-                <p class="empty-state-description">Try adjusting your search or filters</p>
-                <button class="btn btn-primary" id="reset-search">Reset Search</button>
-            </div>
+                <!-- Empty State -->
+                <div class="empty-state hidden" id="empty-state">
+                    <div class="empty-state-icon">🔍</div>
+                    <h3 class="empty-state-title">No groups found</h3>
+                    <p class="empty-state-description">Try adjusting your search or filters</p>
+                    <button class="btn btn-primary" id="reset-search">Reset Search</button>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -133,13 +117,23 @@
     <script>
         let allGroups = [];
         let filteredGroups = [];
+        let myGroupIds = [];
+        let myGroups = [];
 
         document.addEventListener('DOMContentLoaded', async () => {
             try {
+                await (window.authReady || auth.checkAuth());
+                if (currentUser) {
+                    myGroupIds = await api.get('/my-groups') || [];
+                }
+
                 allGroups = await api.get('/groups');
                 filteredGroups = [...allGroups];
+                myGroups = allGroups.filter(g => myGroupIds.includes(g.id));
+                renderMyGroups();
                 displayGroups(filteredGroups);
                 updateGroupCount(filteredGroups.length);
+                bindJoinButtons();
             } catch (error) {
                 console.error('Error loading groups:', error);
             }
@@ -153,8 +147,29 @@
             document.getElementById('reset-search').addEventListener('click', clearFilters);
         });
 
+        function renderMyGroups() {
+            const section = document.getElementById('my-groups-section');
+            const grid = document.getElementById('my-groups-grid');
+            const count = document.getElementById('my-group-count');
+
+            if (!currentUser) {
+                section.style.display = 'none';
+                return;
+            }
+
+            section.style.display = 'block';
+            count.textContent = `${myGroups.length} joined`;
+
+            if (myGroups.length === 0) {
+                grid.innerHTML = '<p class="text-secondary">You have not joined any groups yet.</p>';
+                return;
+            }
+
+            grid.innerHTML = myGroups.map(groupCard).join('');
+        }
+
         function displayGroups(groups) {
-            const grid = document.getElementById('groups-grid');
+            const grid = document.getElementById('all-groups-grid');
             const emptyState = document.getElementById('empty-state');
 
             if (groups.length === 0) {
@@ -166,25 +181,7 @@
             grid.classList.remove('hidden');
             emptyState.classList.add('hidden');
 
-            grid.innerHTML = groups.map(group => `
-                <div class="card group-card">
-                    <div class="group-card-image"></div>
-                    <div class="group-card-content">
-                        <h3 class="group-card-title">${group.name}</h3>
-                        <div class="group-card-meta">
-                            <span>📍 ${group.campus}</span>
-                        </div>
-                        <p class="group-card-description">${group.description}</p>
-                        <div class="tags">
-                            ${group.categories.map(cat => `<span class="tag">${cat}</span>`).join('')}
-                        </div>
-                        <div class="group-card-footer">
-                            <span class="group-members">👥 ${group.members} members</span>
-                            <a href="group-detail.html?id=${group.id}" class="btn btn-sm btn-primary">View</a>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+            grid.innerHTML = groups.map(groupCard).join('');
         }
 
         function handleSearch(e) {
@@ -225,6 +222,7 @@
 
             displayGroups(filtered);
             updateGroupCount(filtered.length);
+            bindJoinButtons();
         }
 
         function clearFilters() {
@@ -235,10 +233,63 @@
             filteredGroups = [...allGroups];
             displayGroups(filteredGroups);
             updateGroupCount(filteredGroups.length);
+            bindJoinButtons();
         }
 
         function updateGroupCount(count) {
             document.getElementById('group-count').textContent = `${count} groups`;
+        }
+
+        function bindJoinButtons() {
+            document.querySelectorAll('.join-group-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const groupId = Number(btn.dataset.groupId);
+                    const status = await toggleGroupMembership(groupId);
+                    if (!status) return;
+
+                    const isJoined = status === 'joined';
+                    if (isJoined && !myGroupIds.includes(groupId)) {
+                        myGroupIds.push(groupId);
+                        myGroups = allGroups.filter(g => myGroupIds.includes(g.id));
+                    } else if (status === 'left') {
+                        myGroupIds = myGroupIds.filter(id => id !== groupId);
+                        myGroups = allGroups.filter(g => myGroupIds.includes(g.id));
+                    }
+
+                    btn.textContent = isJoined ? '✓ Joined (Leave)' : 'Join';
+                    btn.classList.toggle('btn-outline', isJoined);
+                    btn.classList.toggle('btn-primary', !isJoined);
+                    renderMyGroups();
+                });
+            });
+        }
+
+        function groupCard(group) {
+            const isJoined = myGroupIds.includes(group.id);
+            return `
+                <div class="card group-card">
+                    <div class="group-card-image"></div>
+                    <div class="group-card-content">
+                        <h3 class="group-card-title">${group.name}</h3>
+                        <div class="group-card-meta">
+                            <span>📍 ${group.campus}</span>
+                        </div>
+                        <p class="group-card-description">${group.description}</p>
+                        <div class="tags">
+                            ${group.categories.map(cat => `<span class="tag">${cat}</span>`).join('')}
+                        </div>
+                        <div class="group-card-footer">
+                            <span class="group-members">👥 ${group.members} members</span>
+                            <div>
+                                <button class="btn btn-sm ${isJoined ? 'btn-outline' : 'btn-primary'} join-group-btn" data-group-id="${group.id}">
+                                    ${isJoined ? '✓ Joined (Leave)' : 'Join'}
+                                </button>
+                                <a href="group-detail.html?id=${group.id}" class="btn btn-sm btn-outline ml-1">View</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
     </script>
 </body>

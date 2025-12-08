@@ -82,29 +82,219 @@
     </style>
 </head>
 
-<body>
+<body data-disable-nav="true">
     <div class="header">
-        <a href="dashboard.html" class="back-btn">← Back</a>
-        <div class="balance">1,450 SDC</div>
-    </div>
-    <h1>Sun Devil Store</h1>
-    <div class="grid">
-        <div class="item-card">
-            <div class="item-title">ASU Hoodie</div>
-            <div class="item-price">2,000 SDC</div>
-            <button class="buy-btn">Buy</button>
-        </div>
-        <div class="item-card">
-            <div class="item-title">Meal Voucher</div>
-            <div class="item-price">500 SDC</div>
-            <button class="buy-btn">Buy</button>
-        </div>
-        <div class="item-card">
-            <div class="item-title">Notebook</div>
-            <div class="item-price">200 SDC</div>
-            <button class="buy-btn">Buy</button>
+        <h1 style="margin: 0;">Sun Devil Store</h1>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div id="store-balance" class="balance">-- SDC</div>
+            <button id="store-close" class="back-btn" style="font-weight: 700;">✕</button>
         </div>
     </div>
+    <p style="color: var(--text-secondary); margin-bottom: 1rem;">Pay with SDC using your linked wallet (MetaMask).</p>
+    <div id="store-warning" style="color: #fbbf24; margin-bottom: 1rem; display: none;"></div>
+    <div class="grid" id="store-grid"></div>
+
+    <script src="js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.11.1/ethers.umd.min.js"></script>
+    <script>
+        const items = [
+            { id: 1, name: 'ASU Hoodie', price: 2000, description: 'Limited edition maroon hoodie.' },
+            { id: 2, name: 'Meal Voucher', price: 500, description: 'Valid at all campus dining.' },
+            { id: 3, name: 'Notebook', price: 200, description: 'Sun Devil branded notebook.' },
+            { id: 4, name: 'Sticker Pack', price: 50, description: 'Set of ASU stickers.' },
+            { id: 5, name: 'Sparky Keychain', price: 120, description: 'Metal keychain with Sparky logo.' }
+        ];
+
+        const grid = document.getElementById('store-grid');
+        const balanceEl = document.getElementById('store-balance');
+        const warningEl = document.getElementById('store-warning');
+        let config = null;
+        let storeWallet = null;
+        let decimals = 18;
+        let tokenAddress = null;
+        let account = null;
+        let tokenContract = null;
+        let provider = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            document.body.dataset.disableNav = 'true';
+            grid.innerHTML = items.map(itemCard).join('');
+            await (window.authReady || auth.checkAuth());
+            if (!currentUser) {
+                balanceEl.textContent = 'Login required';
+                return;
+            }
+            await loadConfig();
+            if (!config || !config.tokenAddress) {
+                warningEl.style.display = 'block';
+                warningEl.textContent = 'SDC token not configured.';
+                return;
+            }
+            await ensureMetaMaskAccount();
+            await loadBalance();
+            document.addEventListener('sdc:balanceMaybeChanged', loadBalance);
+            const closeBtn = document.getElementById('store-close');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    if (window.history.length > 1) {
+                        window.history.back();
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
+                });
+            }
+        });
+
+        async function loadConfig() {
+            try {
+                const res = await api.get('/sdc/config', { suppressToast: true });
+                config = res || {};
+                storeWallet = config.storeWallet;
+                tokenAddress = config.tokenAddress;
+                decimals = config.decimals || 18;
+                if (!storeWallet) {
+                    warningEl.style.display = 'block';
+                    warningEl.textContent = 'Store wallet not configured.';
+                } else {
+                    warningEl.style.display = 'none';
+                }
+            } catch (e) {
+                console.error('Config load failed', e);
+            }
+        }
+
+        async function loadBalance() {
+            if (!tokenContract || !account) {
+                balanceEl.textContent = '-- SDC';
+                return;
+            }
+            try {
+                const bal = await tokenContract.balanceOf(account);
+                const human = Number(bal) / Math.pow(10, decimals);
+                balanceEl.textContent = `${human.toLocaleString(undefined, { maximumFractionDigits: 4 })} SDC`;
+            } catch (e) {
+                balanceEl.textContent = '-- SDC';
+            }
+        }
+
+        async function ensureMetaMaskAccount() {
+            if (!window.ethereum) {
+                warningEl.style.display = 'block';
+                warningEl.textContent = 'MetaMask not found. Install it to purchase.';
+                return;
+            }
+            provider = new ethers.BrowserProvider(window.ethereum);
+            const okNetwork = await ensureAmoyNetwork(provider);
+            if (!okNetwork) {
+                warningEl.style.display = 'block';
+                warningEl.textContent = 'Switch MetaMask to Polygon Amoy to continue.';
+                return;
+            }
+            const accounts = await provider.send('eth_requestAccounts', []);
+            account = accounts[0];
+            if (currentUser && currentUser.wallet_address && currentUser.wallet_address.toLowerCase() !== account.toLowerCase()) {
+                warningEl.style.display = 'block';
+                warningEl.textContent = 'MetaMask account differs from linked portal wallet.';
+            } else {
+                warningEl.style.display = 'none';
+            }
+            const signer = await provider.getSigner();
+            tokenContract = new ethers.Contract(
+                tokenAddress,
+                ['function transfer(address to, uint256 amount) returns (bool)', 'function balanceOf(address) view returns (uint256)'],
+                signer
+            );
+
+            // Refresh balance after ensuring account/network
+            await loadBalance();
+        }
+
+        async function ensureAmoyNetwork(provider) {
+            try {
+                const chainId = await provider.send('eth_chainId', []);
+                if (chainId === '0x13882') return true; // Amoy
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: '0x13882' }]
+                    });
+                    return true;
+                } catch (switchErr) {
+                    // If chain is not added, add it
+                    if (switchErr.code === 4902) {
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [{
+                                chainId: '0x13882',
+                                chainName: 'Polygon Amoy',
+                                nativeCurrency: { name: 'MATIC', symbol: 'MATIC', decimals: 18 },
+                                rpcUrls: [config?.rpcUrl || 'https://rpc-amoy.polygon.technology/'],
+                                blockExplorerUrls: ['https://amoy.polygonscan.com']
+                            }]
+                        });
+                        return true;
+                    }
+                    console.error('Network switch failed:', switchErr);
+                }
+            } catch (e) {
+                console.error('Network check failed:', e);
+            }
+            return false;
+        }
+
+        function itemCard(item) {
+            return `
+                <div class="item-card">
+                    <div class="item-title">${item.name}</div>
+                    <div class="item-price">${item.price.toLocaleString()} SDC</div>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 0.5rem;">${item.description}</p>
+                    <button class="buy-btn" onclick="buyItem(${item.id})">Buy</button>
+                </div>
+            `;
+        }
+
+        async function buyItem(id) {
+            const item = items.find(i => i.id === id);
+            if (!item) return;
+            if (!currentUser || !currentUser.wallet_address) {
+                alert('Link your wallet in the portal first.');
+                return;
+            }
+            if (!storeWallet) {
+                alert('Store wallet not configured.');
+                return;
+            }
+            await ensureMetaMaskAccount();
+            if (!tokenContract || !account) {
+                alert('Connect MetaMask to continue.');
+                return;
+            }
+            try {
+                const amt = ethers.parseUnits(String(item.price), decimals);
+                const tx = await tokenContract.transfer(storeWallet, amt);
+                await tx.wait();
+                const link = explorerLink(tx.hash, config.network);
+                alert(`Purchased ${item.name}. ${link ? 'Tx: ' + link : 'Tx: ' + tx.hash}`);
+                if (window.addSdcHistory) {
+                    addSdcHistory({ type: 'sent', to: storeWallet, amount: item.price, hash: tx.hash, network: config.network });
+                    document.dispatchEvent(new CustomEvent('sdc:historyUpdated'));
+                }
+                document.dispatchEvent(new CustomEvent('sdc:balanceMaybeChanged'));
+                await loadBalance();
+            } catch (e) {
+                console.error(e);
+                alert('Purchase failed: ' + (e.message || e));
+            }
+        }
+
+        function explorerLink(tx, network) {
+            if (!tx || !network) return null;
+            const net = (network || '').toLowerCase();
+            if (net.includes('amoy')) return `https://amoy.polygonscan.com/tx/${tx}`;
+            if (net.includes('polygon')) return `https://polygonscan.com/tx/${tx}`;
+            return null;
+        }
+    </script>
 </body>
 
 </html>

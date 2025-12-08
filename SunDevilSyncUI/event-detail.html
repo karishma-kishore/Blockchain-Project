@@ -196,15 +196,17 @@
         }
 
         async function handleRSVPClick() {
-            const rsvpd = await toggleEventRSVP(currentEvent.id);
-            if (rsvpd) {
-                // Refresh UI
-                // We could just update the button and counts locally for better UX
-                // But re-rendering ensures consistency
-                currentEvent.spotsLeft--;
-                currentEvent.attendees++;
-                displayEventDetail();
+            const result = await toggleEventRSVP(currentEvent.id);
+            if (!result) return;
+
+            if (result.status === 'confirmed') {
+                currentEvent.spotsLeft = Math.max(0, currentEvent.spotsLeft - 1);
+                currentEvent.attendees += 1;
+            } else if (result.status === 'cancelled') {
+                currentEvent.spotsLeft += 1;
+                currentEvent.attendees = Math.max(0, currentEvent.attendees - 1);
             }
+            displayEventDetail();
         }
 
         function handleBookmarkClick() {

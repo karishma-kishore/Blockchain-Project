@@ -96,28 +96,18 @@ button {
 }
 
 .page-wrapper {
-    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px var(--spacing-lg) var(--spacing-lg);
     min-height: 100vh;
-    padding-top: 60px;
-    /* Height of top nav */
-}
-
-.sidebar {
-    width: 240px;
-    background: var(--bg-primary);
-    border-right: 1px solid var(--border-color);
-    position: fixed;
-    top: 60px;
-    left: 0;
-    bottom: 0;
-    overflow-y: auto;
-    padding: var(--spacing-md);
 }
 
 .main-content {
-    flex: 1;
-    margin-left: 240px;
-    padding: var(--spacing-lg);
+    width: 100%;
+}
+
+.sidebar {
+    display: none;
 }
 
 /* === Top Navigation === */
@@ -126,12 +116,12 @@ button {
     top: 0;
     left: 0;
     right: 0;
-    height: 60px;
+    height: 64px;
     background: var(--asu-maroon);
     color: white;
     display: flex;
     align-items: center;
-    padding: 0 var(--spacing-md);
+    padding: 0 var(--spacing-lg);
     box-shadow: var(--shadow-md);
     z-index: 1000;
 }
@@ -140,14 +130,14 @@ button {
     font-size: var(--font-size-xl);
     font-weight: bold;
     color: var(--asu-gold);
-    margin-right: var(--spacing-xl);
+    margin-right: var(--spacing-lg);
 }
 
 .top-nav-menu {
     display: flex;
     align-items: center;
-    gap: var(--spacing-lg);
-    flex: 1;
+    gap: var(--spacing-md);
+    flex: 1 1 auto;
     list-style: none;
 }
 
@@ -167,7 +157,14 @@ button {
 .top-nav-right {
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
+    gap: var(--spacing-sm);
+    flex-shrink: 0;
+}
+
+.auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
 }
 
 .nav-icon {
@@ -191,7 +188,6 @@ button {
     border-radius: var(--radius-full);
     margin-left: 4px;
 }
-
 .badge-primary {
     background: var(--asu-maroon);
     color: white;

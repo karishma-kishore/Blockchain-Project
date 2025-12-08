@@ -59,29 +59,6 @@
 
     <!-- Page Wrapper -->
     <div class="page-wrapper">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-section">
-                <h3>Navigation</h3>
-                <ul class="sidebar-menu">
-                    <li><a href="index.html" class="active">🏠 Home</a></li>
-                    <li><a href="#">🆔 ID Card</a></li>
-                    <li><a href="#">📰 Feed</a></li>
-                    <li><a href="#">🏆 Leaderboard</a></li>
-                </ul>
-            </div>
-            <div class="sidebar-section">
-                <h3>My Activity</h3>
-                <ul class="sidebar-menu">
-                    <li><a href="#">📅 My Schedule</a></li>
-                    <li><a href="#">👥 My Groups</a></li>
-                    <li><a href="#">🎉 My Events</a></li>
-                    <li><a href="#">📋 My Checklists</a></li>
-                    <li><a href="#">📊 My Involvement</a></li>
-                </ul>
-            </div>
-        </aside>
-
         <!-- Main Content -->
         <main class="main-content">
             <!-- Hero Section -->
@@ -208,46 +185,31 @@
         // Load homepage data
         document.addEventListener('DOMContentLoaded', async () => {
             try {
+                await (window.authReady || auth.checkAuth());
+
                 // Load announcements (Static for now)
                 const announcementsRes = await fetch('data/announcements.json');
                 const announcements = await announcementsRes.json();
                 displayAnnouncements(announcements);
 
                 // Load groups from API
-                const groups = await api.get('/groups');
+                const groups = await api.get('/groups') || [];
+                const myGroupIds = currentUser ? await api.get('/my-groups') || [] : [];
 
-                // Wait for auth check to complete (simple delay or check)
-                // In a real app, we'd use an event or promise. 
-                // For now, we'll assume auth.checkAuth() in main.js runs quickly or we re-check.
-                // Better: let's fetch my-groups if logged in.
-
-                let myGroupIds = [];
                 if (currentUser) {
-                    myGroupIds = await api.get('/my-groups');
+                    const myGroups = groups.filter(g => myGroupIds.includes(g.id));
+                    displayMyGroups(myGroups);
+
+                    // Display suggested groups (groups not in my groups)
+                    const suggestedGroups = groups.filter(g => !myGroupIds.includes(g.id)).slice(0, 3);
+                    displaySuggestedGroups(suggestedGroups);
                 } else {
-                    // If not logged in, maybe check local storage or just show nothing
-                    // But main.js handles auth check on load. 
-                    // Let's wait a bit or hook into auth.
+                    document.getElementById('my-groups-grid').innerHTML = '<p class="text-secondary">Login to see your groups</p>';
+                    displaySuggestedGroups(groups.slice(0, 3));
                 }
 
-                // Display my groups (Mocking the wait for auth)
-                setTimeout(async () => {
-                    if (currentUser) {
-                        const myGroupIds = await api.get('/my-groups');
-                        const myGroups = groups.filter(g => myGroupIds.includes(g.id));
-                        displayMyGroups(myGroups);
-
-                        // Display suggested groups (groups not in my groups)
-                        const suggestedGroups = groups.filter(g => !myGroupIds.includes(g.id)).slice(0, 3);
-                        displaySuggestedGroups(suggestedGroups);
-                    } else {
-                        document.getElementById('my-groups-grid').innerHTML = '<p class="text-secondary">Login to see your groups</p>';
-                        displaySuggestedGroups(groups.slice(0, 3));
-                    }
-                }, 500);
-
                 // Load and display events from API
-                const events = await api.get('/events');
+                const events = await api.get('/events') || [];
                 displayUpcomingEvents(events.slice(0, 3));
             } catch (error) {
                 console.error('Error loading data:', error);

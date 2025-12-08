@@ -11,6 +11,7 @@
     "deploy:testnet": "hardhat run scripts/deploy.js --network polygon_testnet",
     "verify:amoy": "hardhat verify --network polygon_amoy",
     "verify": "hardhat verify --network polygon_testnet",
+    "deploy:sdc:amoy": "hardhat run scripts/deploy-sdc.js --network polygon_amoy",
     "lint": "solhint 'contracts/**/*.sol'",
     "lint:fix": "solhint 'contracts/**/*.sol' --fix",
     "node": "hardhat node"

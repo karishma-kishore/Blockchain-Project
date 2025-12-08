@@ -54,23 +54,11 @@
     </div>
 
     <div class="page-wrapper">
-        <aside class="sidebar">
-            <div class="sidebar-section">
-                <h3>Navigation</h3>
-                <ul class="sidebar-menu">
-                    <li><a href="index.html">🏠 Home</a></li>
-                    <li><a href="events.html">📅 Events</a></li>
-                    <li><a href="groups.html">👥 Groups</a></li>
-                    <li><a href="badges.html" class="active">🏅 Badges</a></li>
-                    <li><a href="verify.html">✅ Verify Badge</a></li>
-                    <li><a href="admin.html">🛠️ Admin</a></li>
-                </ul>
-            </div>
-        </aside>
+        
 
         <main class="main-content">
             <section class="hero">
-                <h1 class="hero-title">Recent Badges</h1>
+                <h1 class="hero-title" id="badges-heading">Recent Badges</h1>
                 <p class="hero-subtitle">View NFTs issued through Sun Devil Central. Data comes from the off-chain index
                     and links to on-chain verification.</p>
                 <div class="hero-actions">
@@ -84,6 +72,15 @@
                     <h2 class="section-title">All Minted Badges</h2>
                 </div>
                 <div id="badge-list"></div>
+            </section>
+                        <section style="margin-top: var(--spacing-lg);" id="my-badges-section">
+                <div class="section-header">
+                    <h2 class="section-title">My Badges</h2>
+                    <span class="text-secondary" id="my-badge-count"></span>
+                </div>
+                <div id="my-badges-list">
+                    <p class="text-secondary">Loading...</p>
+                </div>
             </section>
         </main>
     </div>
