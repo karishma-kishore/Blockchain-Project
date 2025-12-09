@@ -512,8 +512,7 @@
 
                         <li id="header__btn-cont--home" class="hidden-xs ">
 
-                            <a class="hidden-xs topbar__menu topbar__menu--large"
-                                href="https://sundevilcentral.eoss.asu.edu/web_app?id=24040" aria-label="Home">
+                            <a class="hidden-xs topbar__menu topbar__menu--large" href="/home.html" aria-label="Home">
                                 <span class="topbar__menu-icon">
                                     <span class="mdi mdi-home mdi-24px aria-decorative" role="presentation"
                                         aria-hidden="true"></span>
@@ -2248,8 +2247,7 @@
                         <!-- Event Button -->
 
                         <li id="header__btn-cont--events" class="active">
-                            <a class="topbar__menu topbar__menu--large"
-                                href="https://sundevilcentral.eoss.asu.edu/events" aria-label="1482 Events"
+                            <a class="topbar__menu topbar__menu--large" href="/events.html" aria-label="1482 Events"
                                 role="button" aria-current="true">
                                 <span class="topbar__menu-icon">
                                     <span class="mdi mdi-calendar mdi-24px aria-decorative" role="presentation"
@@ -2649,10 +2647,27 @@
                                 <notification-menu-dropdown hubid="24040" _nghost-ng-c3078672506="" ng-version="17.3.12"
                                     style="width: 100%;">
                                     <div _ngcontent-ng-c3078672506="" class="notification-menu-dropdown"><!---->
-                                        <div _ngcontent-ng-c3078672506="" style="display: flex;"><!----><!----></div>
+                                        <div _ngcontent-ng-c3078672506="" style="display: flex;"><!----></----></div>
                                         <!---->
-                                        <div _ngcontent-ng-c3078672506="" class="empty-message"><img
-                                                _ngcontent-ng-c3078672506=""
+                                        <!-- SDC Coin Notification -->
+                                        <div id="sdc-notification" class="notifications-wrapper"
+                                            style="display: none; padding: 12px;">
+                                            <div
+                                                style="background: linear-gradient(135deg, #ffc627 0%, #8c1d40 100%); border-radius: 10px; padding: 15px; color: #fff;">
+                                                <div style="display: flex; align-items: center; gap: 10px;">
+                                                    <span class="mdi mdi-coins" style="font-size: 32px;"></span>
+                                                    <div>
+                                                        <p style="margin: 0; font-weight: 700; font-size: 16px;">🎉
+                                                            Congratulations!</p>
+                                                        <p style="margin: 5px 0 0 0; font-size: 14px;">You can claim
+                                                            <strong id="sdc-amount">20</strong> SDC (Sun Devil Sync
+                                                            Coins) for RSVPing!</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="empty-notif-message" _ngcontent-ng-c3078672506=""
+                                            class="empty-message"><img _ngcontent-ng-c3078672506=""
                                                 src="./angular_elements/cg-angular-elements/assets/empty-state.svg"
                                                 alt="" role="presentation" aria-hidden="true" class="empty-icon">
                                             <p _ngcontent-ng-c3078672506="" class="empty-title">Nothing to see here yet!
@@ -3295,13 +3310,104 @@
 
                                 <script>
                                     var formSubmitted = 0;
+                                    var currentEventId = '<%= event.id %>';
+                                    var currentEventTitle = '<%= event.title %>';
+
+                                    // Check RSVP status on page load
+                                    $(document).ready(function () {
+                                        checkRsvpStatus();
+                                    });
+
+                                    function checkRsvpStatus() {
+                                        $.get('/api/rsvp/' + currentEventId, function (data) {
+                                            if (data.hasRsvp) {
+                                                showRsvpConfirmation(data.rsvp);
+                                                // Also check SDC coins
+                                                $.get('/api/sdc', function (sdcData) {
+                                                    if (sdcData.claimable > 0) {
+                                                        $('#sdc-amount').text(sdcData.claimable);
+                                                        $('#sdc-notification').show();
+                                                        $('#empty-notif-message').hide();
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+
                                     function submitRegistrationForm() {
                                         if (formSubmitted == 0) {
-                                            document.forms.register_form.submit();
                                             formSubmitted = 1;
+                                            var quantity = $('select[name="ticket_1000387224"]').val() || 1;
+
+                                            $.ajax({
+                                                url: '/api/rsvp',
+                                                method: 'POST',
+                                                contentType: 'application/json',
+                                                data: JSON.stringify({
+                                                    eventId: currentEventId,
+                                                    eventTitle: currentEventTitle,
+                                                    quantity: parseInt(quantity)
+                                                }),
+                                                success: function (response) {
+                                                    showRsvpConfirmation(response.rsvp);
+                                                    // Show SDC notification
+                                                    $('#sdc-amount').text(response.sdcCoins);
+                                                    $('#sdc-notification').show();
+                                                    $('#empty-notif-message').hide();
+                                                    // Open notification dropdown to show the reward
+                                                    $('#header__notif-icon').dropdown('toggle');
+                                                },
+                                                error: function (err) {
+                                                    alert('Failed to register. Please try again.');
+                                                    formSubmitted = 0;
+                                                }
+                                            });
                                         }
                                         else {
                                             alert('Please wait...');
+                                        }
+                                    }
+
+                                    function showRsvpConfirmation(rsvp) {
+                                        var confirmationHtml = `
+                                            <div id="rsvp-confirmation" style="text-align: center; padding: 20px;">
+                                                <div style="background: linear-gradient(135deg, #28a745 0%, #218838 100%); border-radius: 10px; padding: 25px; color: #fff; margin-bottom: 15px;">
+                                                    <span class="mdi mdi-check-circle" style="font-size: 48px;"></span>
+                                                    <h3 style="margin: 10px 0 5px 0;">You're Registered!</h3>
+                                                    <p style="margin: 0; font-size: 14px;">Event: ${rsvp.eventTitle}</p>
+                                                    <p style="margin: 5px 0 0 0; font-size: 14px;">Quantity: ${rsvp.quantity}</p>
+                                                    <p style="margin: 5px 0 0 0; font-size: 12px; opacity: 0.8;">Registered on: ${new Date(rsvp.rsvpDate).toLocaleDateString()}</p>
+                                                </div>
+                                                <button class="btn btn-danger" onclick="cancelRsvp()" style="margin-top: 10px;">
+                                                    <span class="mdi mdi-cancel"></span> Cancel RSVP
+                                                </button>
+                                            </div>
+                                        `;
+                                        $('#register_form').hide();
+                                        $('#more_tickets .card-block').find('.btn-cg--event').parent().hide();
+                                        if ($('#rsvp-confirmation').length === 0) {
+                                            $('#more_tickets .card-block').append(confirmationHtml);
+                                        }
+                                    }
+
+                                    function cancelRsvp() {
+                                        if (confirm('Are you sure you want to cancel your RSVP?')) {
+                                            $.ajax({
+                                                url: '/api/rsvp/' + currentEventId,
+                                                method: 'DELETE',
+                                                success: function (response) {
+                                                    $('#rsvp-confirmation').remove();
+                                                    $('#register_form').show();
+                                                    $('#more_tickets .card-block').find('.btn-cg--event').parent().show();
+                                                    formSubmitted = 0;
+                                                    // Hide SDC notification
+                                                    $('#sdc-notification').hide();
+                                                    $('#empty-notif-message').show();
+                                                },
+                                                error: function (err) {
+                                                    alert('Failed to cancel RSVP. Please try again.');
+                                                }
+                                            });
                                         }
                                     }
                                 </script>

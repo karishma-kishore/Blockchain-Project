@@ -36,6 +36,113 @@ app.use('/bower_components', express.static(path.join(__dirname, 'bower_componen
 app.use('/glyphicons-pro', express.static(path.join(__dirname, 'glyphicons-pro')));
 app.use('/angular_elements', express.static(path.join(__dirname, 'angular_elements')));
 
+// Parse JSON bodies
+app.use(express.json());
+
+// Paths for data files
+const rsvpsPath = path.join(__dirname, 'data', 'rsvps.json');
+const sdcCoinsPath = path.join(__dirname, 'data', 'sdc_coins.json');
+
+// Helper functions to read/write JSON files
+function readJsonFile(filePath) {
+    try {
+        return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    } catch (err) {
+        console.error(`Error reading ${filePath}:`, err);
+        return null;
+    }
+}
+
+function writeJsonFile(filePath, data) {
+    try {
+        fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+        return true;
+    } catch (err) {
+        console.error(`Error writing ${filePath}:`, err);
+        return false;
+    }
+}
+
+// API: Get RSVP status for an event
+app.get('/api/rsvp/:eventId', (req, res) => {
+    const rsvp = readJsonFile(rsvpsPath);
+    if (rsvp && rsvp.eventId === req.params.eventId) {
+        res.json({ hasRsvp: true, rsvp: rsvp });
+    } else {
+        res.json({ hasRsvp: false });
+    }
+});
+
+// API: Save RSVP
+app.post('/api/rsvp', (req, res) => {
+    const { eventId, eventTitle, quantity } = req.body;
+
+    // Save RSVP
+    const rsvp = {
+        eventId: eventId,
+        eventTitle: eventTitle,
+        quantity: quantity || 1,
+        rsvpDate: new Date().toISOString()
+    };
+
+    if (!writeJsonFile(rsvpsPath, rsvp)) {
+        return res.status(500).json({ error: 'Failed to save RSVP' });
+    }
+
+    // Add SDC coins
+    let sdc = readJsonFile(sdcCoinsPath) || { claimable: 0, claims: [] };
+    sdc.claimable += 20;
+    sdc.claims.push({
+        eventId: eventId,
+        amount: 20,
+        date: new Date().toISOString()
+    });
+
+    if (!writeJsonFile(sdcCoinsPath, sdc)) {
+        return res.status(500).json({ error: 'Failed to update SDC coins' });
+    }
+
+    res.json({ success: true, rsvp: rsvp, sdcCoins: sdc.claimable });
+});
+
+// API: Cancel RSVP
+app.delete('/api/rsvp/:eventId', (req, res) => {
+    const rsvp = readJsonFile(rsvpsPath);
+
+    if (!rsvp || rsvp.eventId !== req.params.eventId) {
+        return res.status(404).json({ error: 'RSVP not found' });
+    }
+
+    // Clear RSVP
+    const emptyRsvp = {
+        eventId: null,
+        eventTitle: null,
+        quantity: 0,
+        rsvpDate: null
+    };
+
+    if (!writeJsonFile(rsvpsPath, emptyRsvp)) {
+        return res.status(500).json({ error: 'Failed to cancel RSVP' });
+    }
+
+    // Remove SDC coins for this event
+    let sdc = readJsonFile(sdcCoinsPath) || { claimable: 0, claims: [] };
+    const claimIndex = sdc.claims.findIndex(c => c.eventId === req.params.eventId);
+    if (claimIndex !== -1) {
+        sdc.claimable -= sdc.claims[claimIndex].amount;
+        sdc.claims.splice(claimIndex, 1);
+        writeJsonFile(sdcCoinsPath, sdc);
+    }
+
+    res.json({ success: true });
+});
+
+// API: Get SDC coins
+app.get('/api/sdc', (req, res) => {
+    const sdc = readJsonFile(sdcCoinsPath) || { claimable: 0, claims: [] };
+    res.json(sdc);
+});
+
 // Routes
 
 app.get('/', (req, res) => {
