@@ -4,7 +4,7 @@
 <head>
     <script async="" src="https://cdn.eu.pendo.io/agent/static/fd9c51b9-abf2-4c23-76c6-8860887d5042/pendo.js"></script>
     <script>
-        var jsPageName = "Fade In: Weekly Meeting - Fade In: The Screenwriters\u0027 Club at ASU"; // pass strPageName to JavaScript, used in function setPageName() [accessibility.js]
+        var jsPageName = "<%= event.title %> - <%= event.organizer %>"; // pass strPageName to JavaScript, used in function setPageName() [accessibility.js]
         var jsAjaxRequest = ('0' === '1') ? true : false;
     </script>
 
@@ -28,9 +28,8 @@
     <title>
         <%= event.title %> - Arizona State University
     </title>
-    <meta name="description"
-        content="Join Fade In’s weekly meetings where screenwriters workshop original scripts, craft compelling narratives, and practice the art of creative storytelling. Whether you&amp;#39;re a film student on the screen...">
-    <meta name="title" content="Fade In: Weekly Meeting - Fade In: The Screenwriters' Club at ASU">
+    <meta name="description" content="<%= event.aria_description || 'Join us for this event at ASU.' %>">
+    <meta name="title" content="<%= event.title %> - <%= event.organizer %>">
 
 
 
@@ -2930,7 +2929,7 @@
             <div id="content-cont" class="content-cont content-page">
 
                 <div id="page-cont" class="content" role="main"
-                    aria-label="Fade In: Weekly Meeting - Fade In: The Screenwriters' Club At ASU.">
+                    aria-label="<%= event.title %> - <%= event.organizer %>">
                     <div style="position: relative;"><span id="span-top-of-main-content--0" class="content__top-element"
                             tabindex="0" aria-label="Top of Main Content." style="display: none;">Top of Main
                             Content</span></div>
@@ -2982,8 +2981,9 @@
                                     </h1>
                                     <p class="rsvp__event-org">by <a href="javascript:;"
                                             onclick="$('html, body').animate({ scrollTop: $('#event_host').offset().top - 60 }, 500); setFocusToElementFromCssSelector('#event_host a');"
-                                            aria-label="Fade In: The Screenwriters’ Club at ASU, more details">Fade In:
-                                            The Screenwriters' Club at ASU</a></p>
+                                            aria-label="<%= event.organizer %>, more details">
+                                            <%= event.organizer %>
+                                        </a></p>
 
                                     <p class="rsvp__event-tags" data-z="rb.tag.00" role="group"
                                         aria-label="Filter events by category in a new tab">
@@ -3027,7 +3027,12 @@
                                         <p style="margin:0;">
                                             <%= event.date_display %>
                                         </p>
-                                        <p style="margin:0;">7:30 PM – 9 PM <span id="timezone">MST (GMT-7)</span></p>
+                                        <p style="margin:0;">
+                                            <%= event.date_line1 %>
+                                                <%= event.date_line2 || '' %> <span id="timezone">
+                                                        <%= event.timezone || 'MST (GMT-7)' %>
+                                                    </span>
+                                        </p>
 
                                         <script>
                                             var localDate = new Date('2025-12-10T21:00:00.0000000-07:00');
@@ -3039,8 +3044,8 @@
 
 
                                         <a href="javascript:;"
-                                            onclick="openModal('/rsvp_add_calendar?event_uid=09461220dfe28240c265b1adb6fa31a6&amp;ax=1');"
-                                            aria-label="Add to Calendar. Fade In: Weekly Meeting. Wed, Dec 10, 2025 At 7:30 PM">Add
+                                            onclick="openModal('/rsvp_add_calendar?event_uid=<%= event.id %>&amp;ax=1');"
+                                            aria-label="Add to Calendar. <%= event.title %>. <%= event.date_display %>">Add
                                             to Calendar</a>
 
 
@@ -3055,7 +3060,9 @@
                                         <p style="margin:0;">
                                             <%= event.location %>
                                         </p>
-                                        <p style="margin:0;">525 E University Dr, Tempe, AZ 85287, United States</p>
+                                        <p style="margin:0;">
+                                            <%= event.location %>
+                                        </p>
 
                                         <a href="javascript:;" aria-label="View Map"
                                             onclick="$('html, body').animate({ scrollTop: $('#event_where').offset().top - 60 }, 500);">View
@@ -3096,16 +3103,16 @@
 		{
 		  "@context": "https://schema.org",
 		  "@type": "Event",
-		  "name": "Fade In: Weekly Meeting",
-		  "startDate": "2025-12-10T19:30:00-07:00",
-		  "endDate": "2025-12-10T21:00:00-07:00",
+		  "name": "<%= event.title %>",
+		  "startDate": "<%= event.date_line1 %>",
+		  "endDate": "<%= event.date_line2 %>",
 		  "location": {
 			"@type": "Place",
-			"name": "Bateman Physical Sciences Center H (PSH) Room 152",
-			"address": "525 E University Dr, Tempe, AZ 85287, United States"
+			"name": "<%= event.location %>",
+			"address": "Arizona State University"
 		  },
 		  
-		  "description": "Join Fade In’s weekly meetings where screenwriters workshop original scripts, craft compelling narratives, and practice the art of creative storytelling. Whether you\u0027re a film student on the screenwriting track or just interested in creative writing, there are many opportunities to learn more about screenwriting and receive feedback on your written work. Each week will feature table readings, group discussions, and writing workshops. No experience necessary!"
+		  "description": "<%= event.aria_description %>"
 		}
 		</script>
 
@@ -3300,7 +3307,7 @@
                                 </script>
 
                                 <a class="btn btn-cg--event"
-                                    aria-label="Register for this event. Fade In: Weekly Meeting. Wed, Dec 10, 2025 At 7:30 PM"
+                                    aria-label="Register for this event. <%= event.title %>. <%= event.date_display %>"
                                     href="javascript:submitRegistrationForm()">Register</a>
 
 
@@ -3323,13 +3330,7 @@
                             </div>
                             <div class="card-border border-cg--event"></div>
 
-                            <%= event.description_full || 'Join us for this exciting event!' %>
-                                student on the screenwriting track or just interested in creative writing, there are
-                                many
-                                opportunities to learn more about screenwriting and receive feedback on your written
-                                work.
-                                Each week will feature table readings, group discussions, and writing workshops. No
-                                experience necessary!
+                            <%= event.aria_description || 'Join us for this exciting event!' %>
 
 
                                 <!-- Event Website Link -->
@@ -3383,8 +3384,10 @@
                             <div class="text-center">
                                 <span class="grey-element mdi mdi-map-marker aria-decorative" role="presentation"
                                     aria-hidden="true"></span>
-                                <p style="margin:0;">Bateman Physical Sciences Center H (PSH) Room 152</p>
-                                <p style="margin:0;">525 E University Dr, Tempe, AZ 85287, United States</p>
+                                <p style="margin:0;">
+                                    <%= event.location %>
+                                </p>
+                                <p style="margin:0;">Arizona State University</p>
                             </div>
                         </div>
                     </div>
@@ -3423,8 +3426,7 @@
                     <!-- Event Host -->
 
                     <div id="event_host" class="card">
-                        <div class="card-block" role="group"
-                            aria-label="Hosted By Fade In: The Screenwriters’ Club at ASU">
+                        <div class="card-block" role="group" aria-label="Hosted By <%= event.organizer %>">
                             <div class="card-block__title">
                                 <h2 class="header-cg--h3"><span
                                         class="mdi mdi-account-group color-cg--event aria-decorative"
@@ -3432,11 +3434,11 @@
                             </div>
                             <div class="card-border border-cg--event"></div>
 
-                            <strong>Fade In: The Screenwriters' Club at ASU</strong> | <a
-                                href="https://sundevilcentral.eoss.asu.edu/FadeIn/"
-                                aria-label="Go to the Fade In: The Screenwriters’ Club at ASU  group website.">Website</a>
-                            | <a href="https://sundevilcentral.eoss.asu.edu/events?group_ids=36015"
-                                aria-label="View more events from Fade In: The Screenwriters’ Club at ASU.">View More
+                            <strong>
+                                <%= event.organizer %>
+                            </strong> | <a href="#"
+                                aria-label="Go to the <%= event.organizer %>  group website.">Website</a>
+                            | <a href="/events" aria-label="View more events from <%= event.organizer %>.">View More
                                 Events</a>
 
 

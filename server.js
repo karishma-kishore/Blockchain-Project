@@ -5,14 +5,17 @@ const path = require('path');
 const fs = require('fs');
 
 // Load events data
-const eventsPath = path.join(__dirname, 'events.json');
+const eventsPath = path.join(__dirname, 'data', 'events.json');
 let eventsData = [];
 if (fs.existsSync(eventsPath)) {
     try {
         eventsData = JSON.parse(fs.readFileSync(eventsPath, 'utf8'));
+        console.log(`Loaded ${eventsData.length} events from ${eventsPath}`);
     } catch (err) {
         console.error("Error reading events.json:", err);
     }
+} else {
+    console.warn("Events data file not found:", eventsPath);
 }
 
 // Set URL to IDs for easier lookup if needed, checking for duplicates?
@@ -65,8 +68,17 @@ app.get('/index.html', (req, res) => res.render('index'));
 app.get('/home.html', (req, res) => res.render('home'));
 app.get('/events.html', (req, res) => res.render('events', { events: eventsData }));
 app.get('/rsvp.html', (req, res) => {
-    const eventId = req.query.id;
-    const event = eventsData.find(e => e.id == eventId);
+    let eventId = req.query.id;
+    let event;
+    if (eventId) {
+        event = eventsData.find(e => e.id == eventId);
+    }
+
+    // Fallback if no ID or ID not found: Use first event (or any valid one)
+    if (!event && eventsData.length > 0) {
+        event = eventsData[0]; // Default to first available event
+    }
+
     if (event) {
         res.render('rsvp', { event: event });
     } else {
