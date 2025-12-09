@@ -16494,10 +16494,7 @@
                                                 currentDate = eventDate;
                                         %>
                                         <li class="list-group__separator">
-                                            <h2 class="header-cg--h4" role="region" aria-label="Events on <%= currentDate %>"><%= currentDate || '
-                                                        Upcoming' %>
-                                                        </h2>
-                                                        </li>
+                                            <h2 class="header-cg--h4" role="region" aria-label="Events on <%= currentDate %>"><%= currentDate || 'Upcoming' %></h2>
                                                         <% } %>
 
                                                             <%- include('partials/event-item', { event: event }) %>

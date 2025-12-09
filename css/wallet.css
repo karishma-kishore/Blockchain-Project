@@ -337,14 +337,14 @@
 }
 
 .btn-redeem {
-    background: var(--wallet-gradient);
+    background: var(--asu-maroon);
     color: #fff;
     padding: 10px 20px;
     font-size: 0.9rem;
 }
 
 .btn-redeem:hover:not(:disabled) {
-    opacity: 0.9;
+    background: #6d162f;
     transform: scale(1.02);
 }
 
