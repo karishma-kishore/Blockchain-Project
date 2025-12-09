@@ -1,8 +1,40 @@
 
+// Load environment variables
+require('dotenv').config();
+
 const express = require('express');
 const app = express();
 const path = require('path');
 const fs = require('fs');
+const { ethers } = require('ethers');
+
+// Blockchain configuration
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
+const RPC_URL = process.env.RPC_URL || 'https://rpc-amoy.polygon.technology';
+const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || '0x00485658Ba58bBD39F18a419FCE4F8488b7e136d';
+
+// SDC Token ABI (includes mint for claiming)
+const SDC_ABI = [
+    "function transfer(address to, uint256 amount) returns (bool)",
+    "function balanceOf(address account) view returns (uint256)",
+    "function decimals() view returns (uint8)",
+    "function mint(address to, uint256 amount)"
+];
+
+// Initialize blockchain provider and wallet
+let provider, wallet, sdcContract;
+try {
+    provider = new ethers.JsonRpcProvider(RPC_URL);
+    if (PRIVATE_KEY) {
+        wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+        sdcContract = new ethers.Contract(CONTRACT_ADDRESS, SDC_ABI, wallet);
+        console.log(`Blockchain wallet initialized: ${wallet.address}`);
+    } else {
+        console.warn('Warning: PRIVATE_KEY not set in .env - blockchain claiming disabled');
+    }
+} catch (err) {
+    console.error('Error initializing blockchain:', err);
+}
 
 // Load events data
 const eventsPath = path.join(__dirname, 'data', 'events.json');
@@ -143,12 +175,22 @@ app.get('/api/sdc', (req, res) => {
     res.json(sdc);
 });
 
-// API: Claim SDC tokens (resets claimable balance)
+// API: Claim SDC tokens (transfers tokens from deployer wallet to user)
 app.post('/api/claim', async (req, res) => {
     const { walletAddress } = req.body;
 
     if (!walletAddress) {
         return res.status(400).json({ error: 'Wallet address required' });
+    }
+
+    // Validate wallet address
+    if (!ethers.isAddress(walletAddress)) {
+        return res.status(400).json({ error: 'Invalid wallet address' });
+    }
+
+    // Check if blockchain is initialized
+    if (!sdcContract || !wallet) {
+        return res.status(500).json({ error: 'Blockchain not configured. Check server .env file.' });
     }
 
     const sdc = readJsonFile(sdcCoinsPath) || { claimable: 0, claims: [] };
@@ -159,33 +201,47 @@ app.post('/api/claim', async (req, res) => {
 
     const amountToClaim = sdc.claimable;
 
-    // For demo purposes, we simulate a successful claim
-    // In production, this would use ethers.js with a private key to send tokens
-    // Since we don't have access to the private key, we just reset the balance
+    try {
+        console.log(`Minting ${amountToClaim} SDC to ${walletAddress}...`);
 
-    // Reset claimable balance
-    sdc.claimable = 0;
-    sdc.claims = [];
-    sdc.lastClaim = {
-        walletAddress: walletAddress,
-        amount: amountToClaim,
-        date: new Date().toISOString()
-    };
+        // Convert amount to wei (18 decimals)
+        const amountWei = ethers.parseEther(amountToClaim.toString());
 
-    if (!writeJsonFile(sdcCoinsPath, sdc)) {
-        return res.status(500).json({ error: 'Failed to update claim status' });
+        // Mint new tokens directly to user's wallet
+        const tx = await sdcContract.mint(walletAddress, amountWei);
+        console.log(`Mint transaction submitted: ${tx.hash}`);
+
+        // Wait for confirmation
+        const receipt = await tx.wait();
+        console.log(`Transaction confirmed in block ${receipt.blockNumber}`);
+
+        // Reset claimable balance after successful mint
+        sdc.claimable = 0;
+        sdc.claims = [];
+        sdc.lastClaim = {
+            walletAddress: walletAddress,
+            amount: amountToClaim,
+            txHash: tx.hash,
+            date: new Date().toISOString()
+        };
+
+        writeJsonFile(sdcCoinsPath, sdc);
+
+        res.json({
+            success: true,
+            amount: amountToClaim,
+            txHash: tx.hash,
+            blockNumber: receipt.blockNumber,
+            message: `Successfully minted ${amountToClaim} SDC tokens!`
+        });
+
+    } catch (err) {
+        console.error('Blockchain mint error:', err);
+        res.status(500).json({
+            error: err.reason || err.message || 'Failed to mint tokens',
+            details: err.shortMessage || ''
+        });
     }
-
-    // Return success with a simulated tx hash
-    // In production, this would be the real transaction hash
-    const simulatedTxHash = '0x' + Array(64).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join('');
-
-    res.json({
-        success: true,
-        amount: amountToClaim,
-        txHash: simulatedTxHash,
-        message: `Claimed ${amountToClaim} SDC tokens (Demo mode - tokens would be sent in production)`
-    });
 });
 
 // API: Get goodies catalog
