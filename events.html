@@ -2,6 +2,7 @@
     class=" js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage no-websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers no-applicationcache svg inlinesvg smil svgclippaths">
 
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <script async="" src="https://cdn.eu.pendo.io/agent/static/fd9c51b9-abf2-4c23-76c6-8860887d5042/pendo.js"></script>
     <script>
         var jsPageName = "Events List"; // pass strPageName to JavaScript, used in function setPageName() [accessibility.js]
@@ -2550,19 +2551,11 @@
                             </style>
 
                             <button id="header__notif-icon" class="dropdown-toggle topbar__menu"
-                                style="min-width: 7rem; padding: 0px" data-toggle="dropdown" data-placement="bottom"
+                                style="min-width: 7rem; padding: 0px;" data-toggle="dropdown" data-placement="bottom"
                                 title="" aria-label="Notifications" data-original-title="Notifications">
-                                <span id="placeholder-bell" class="mdi mdi-bell aria-decorative" role="presentation"
-                                    aria-hidden="true" style="display: none;"></span>
-                                <notification-menu-icon id="angular-bell" _nghost-ng-c2932246790="" ng-version="17.3.12"
-                                    style="display: flex;"><button _ngcontent-ng-c2932246790="" aria-hidden="true"
-                                        aria-label="notification dropdown" tabindex="-1"><svg
-                                            _ngcontent-ng-c2932246790="" height="20" width="20" viewBox="0 0 24 24">
-                                            <path _ngcontent-ng-c2932246790="" fill="currentColor"
-                                                d="M21 19v1H3v-1l2-2v-6c0-3.1 2.03-5.83 5-6.71V4a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.29c2.97.88 5 3.61 5 6.71v6l2 2m-7 2a2 2 0 0 1-2 2 2 2 0 0 1-2-2">
-                                            </path>
-                                        </svg><app-notification-menu-icon-count _ngcontent-ng-c2932246790=""
-                                            _nghost-ng-c2120954839=""><!----></app-notification-menu-icon-count></button></notification-menu-icon>
+                                <span id="placeholder-bell" class="mdi mdi-bell mdi-24px aria-decorative"
+                                    role="presentation" aria-hidden="true" style="display: inline-block;"></span>
+                                <!-- Angular component hidden/removed -->
                             </button>
                             <script>$("#header__notif-icon").tooltip({ trigger: "hover" });</script>
                             <ul id="header__notif-dropdown" class="dropdown-menu" aria-label="Notifications dropdown"
@@ -3193,7 +3186,7 @@
                             });
                         </script>
                         <div class="row">
-                            <div id="listing__filters--search-cont" class="col-xs-12 col-sm-3_5 col-md-2_5">
+                            <div id="listing__filters--search-cont" class="col-xs-12 col-sm-4 col-md-3">
                                 <div class="input-group" role="presentation">
 
                                     <input id="search_word" type="text" class="form-control" placeholder="Search Events"
@@ -3213,7 +3206,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <div id="listing__filters--filters-cont" class="col-xs-12 col-sm-5 col-md-7">
+                            <div id="listing__filters-cont" class="col-xs-12 col-sm-8 col-md-9">
 
                                 <div class="select-group-justified" role="presentation">
 
@@ -14761,14 +14754,11 @@
 
                                         <script type="text/javascript">
                                             // console.log('> CHECKPOINT {a00} filter.multiPlaceholder=Group');
-                                            // console.log('> CHECKPOINT {a00} filter.multiSearch=False');
-                                            $("#select_filter2").multiselect({
+                                            // console.log('> CHECKPOINT {a00} filter.mu                       $("#select_filter2").multiselect({
 
-                                                buttonWidth: '100%',
+                                            buttonWidth: '1e,
 
-                                                enableHTML: false,
-
-                                                maxHeight: 400,
+                                            maxHeight: 400,
                                                 nonSelectedText: ' - Group - '
                                             });
 
@@ -14789,15 +14779,12 @@
                                             if ('' != '' && url.searchParams.get('group_ids') == null) {
                                                 var url = new URL(location.href);
                                                 url.searchParams.set('group_ids', '');
-                                                history.replaceState(history.state, '', url.pathname + url.search);
-                                            }
-
-                                            $("#select_filter2").bind("change", function () {
-                                                setURLParametersFromFilters();
-                                                getDataFromWebService();
-                                                toggleClearButton();
-                                                shouldDisableSortable();
-                                            });
+                                                history.replaceState(hich                       $("#select_filter2").bind("change", function () {
+                                                    setURLParametersFromFilters();
+                                                    getDataFromWebService();
+                                                    toggleClearButton();
+                                                    shouldDisableSortable();
+                                                });
                                         </script>
                                     </div>
 
@@ -14921,44 +14908,43 @@
                                         </span>
 
                                         <script type="text/javascript">
-                                            // console.log('> CHECKPOINT {a00} filter.multiPlaceholder=Group Type');
-                                            // console.log('> CHECKPOINT {a00} filter.multiSearch=False');
-                                            $("#select_filter3").multiselect({
+                                                // console.log('> CHECKPOINT {a00} filter.multiPlaceholder=Group Type');
+                                                // console.log('> CHECKPOINT {a00} filter.multiSearch=False');
+                                                $("#select_filter3").multiselect({
 
-                                                buttonWidth: '100%',
+                                                    buttonWidth: '100%',
 
-                                                enableHTML: false,
+                                                    enableHTML: false,
 
-                                                maxHeight: 400,
-                                                nonSelectedText: ' - Group Type - '
-                                            });
-
-
-                                            $("#select_filter3").attr("tabindex", "-1");
+                                                    maxHeight: 400,
+                                                    n
+                                                });
 
 
-                                            $("#select_filter3").siblings(".btn-group").find(" .multiselect.dropdown-toggle").attr("role", "listbox");
-                                            $("#select_filter3").siblings(".btn-group").find(" .multiselect.dropdown-toggle").attr("aria-label", "Group Type");
-                                            $("#select_filter3").siblings(".btn-group").find(" .multiselect.dropdown-toggle").attr("aria-description", "Multi select filter list. Filter by Group Type.");
+                                                $("#select_filter3").attr("tabindex", "-1");
 
 
-                                            // $("#select_filter3").attr("aria-label", "Multi-Select Filter Group Type");
+                                                $("#select_filter3").siblings(".btn-group").find(" .multiselect.dropdown-toggle").attr("role", "listbox");
+                                                $("#select_filter3").siblings(".btn-group").find(" .multiselect.dropdown-toggle").attr("aria-label", "Group Type");
+                                                $("#select_filter3").siblings(".btn-group").find(" .multiselect.dropdown-toggle").attr("aria-description", "Multi select filter list. Filter by Group Type.");
+
+
+                                                // $("#select_filter3").attr("aria-label", "Multi-Select Filter Group Type");
 
                                         </script>
 
                                         <script type="text/javascript">
-                                            if ('' != '' && url.searchParams.get('group_type') == null) {
-                                                var url = new URL(location.href);
-                                                url.searchParams.set('group_type', '');
-                                                history.replaceState(history.state, '', url.pathname + url.search);
-                                            }
+                                                if ('' != '' && url.searchParams.get('group_type') == null) {
+                                                    var url = new URL(location.href);
+                                                    url.searchParams.set('group_type', '');
+                                                    history.replaceState(history.state, '', url.pathname + url.search);
+                                                }
 
-                                            $("#select_filter3").bind("change", function () {
-                                                setURLParametersFromFilters();
-                                                getDataFromWebService();
-                                                toggleClearButton();
-                                                shouldDisableSortable();
-                                            });
+                                                $("#select_filter3").bind("change", function () {
+                                                    setURLParametersFromFilters();
+                                                    getDataFromWebService();
+                                                    ()  shouldDisableSortable();
+                                                });
                                         </script>
                                     </div>
 
@@ -15248,41 +15234,41 @@
                                         </span>
 
                                         <script type="text/javascript">
-                                            // console.log('> CHECKPOINT {a00} filter.multiPlaceholder=Category Tags');
-                                            // console.log('> CHECKPOINT {a00} filter.multiSearch=False');
-                                            $("#select_filter4").multiselect({
+                                                // console.log('> CHECKPOINT {a00} filter.multiPlaceholder=Category Tags');
+                                                // console.log('> CHECKPOINT {a00} filter.multiSearch=False');
+                                                $("#select_filter4").multiselect({
 
-                                                buttonWidth: '100%',
+                                                    buttonWidth: '100%',
 
-                                                enableHTML: false,
+                                                    enableHTML: false,
 
-                                                maxHeight: 400,
-                                                nonSelectedText: ' - Category Tags - '
-                                            });
-
-
-                                            $("#select_filter4").attr("tabindex", "-1");
+                                                    maxHeight: 400,
+                                                    nonSelectedText: ' - Category Tags - '
+                                                });
 
 
-                                            // NOTE assigning role=listbox here but it may be something else (but not a combobox); research hasn't provided an answer
-                                            $("#select_filter4").siblings(".btn-group").find(" .multiselect.dropdown-toggle").attr("role", "listbox");
-                                            $("#select_filter4").siblings(".btn-group").find(" .multiselect.dropdown-toggle").attr("aria-label", "Category Tags");
-                                            $("#select_filter4").siblings(".btn-group").find(" .multiselect.dropdown-toggle").attr("aria-description", "Multi select list with conditional logic. Filter by Category Tags.");
+                                                $("#select_filter4").attr("tabindex", "-1");
 
 
-                                            // $("#select_filter4").attr("aria-label", "Multi-Select Filter Category Tags");
+                                                // NOTE assigning role=listbox here but it may be something else (but not a combobox); research hasn't provided an answer
+                                                $("#select_filter4").siblings(".btn-group").find(" .multiselect.dropdown-toggle").attr("role", "listbox");
+                                                $("#select_filter4").siblings(".btn-group").find(" .multiselect.dropdown-toggle").attr("aria-label", "Category Tags");
+                                                $("#select_filter4").siblings(".btn-group").find(" .multiselect.dropdown-toggle").attr("aria-description", "Multi select list with conditional logic. Filter by Category Tags.");
+
+
+                                                // $("#select_filter4").attr("aria-label", "Multi-Select Filter Category Tags");
 
                                         </script>
 
                                         <script>
-                                            $("#select_filter4").siblings(".btn-group").find(" .multiselect-container.dropdown-menu .multiselect-item.multiselect-group.optgroup_contains").after("<li style='margin-top:5px;padding-left:10px;'><div role='radiogroup' aria-labelledby='filter4_containslogic_label'><div id='filter4_containslogic_label' class='sr-only'>Logic for items that contain selected values</div><div class='radio radio-inline'><input id='radio_containslogic__or__4' type='radio' name='filter4_containslogic' value='OR' checked tabindex='0' aria-describedby='filter4_containslogic_desc' role='option'><label for='radio_containslogic__or__4'> OR </label></div><div class='radio radio-inline'><input id='radio_containslogic__and__4' type='radio' name='filter4_containslogic' value='AND' tabindex='0' aria-describedby='filter4_containslogic_desc' role='option'><label for='radio_containslogic__and__4'> AND </label></div><div id='filter4_containslogic_desc' class='sr-only'>Choose logic for items that contain selected values</div></div></li><li class='multiselect-item divider'></li>");
-                                            $("#select_filter4").siblings(".btn-group").find(" .multiselect-container.dropdown-menu .multiselect-item.multiselect-group.optgroup_does_not_contain").after("<li style='margin-top:5px;padding-left:10px;'><div role='radiogroup' aria-labelledby='filter4_notcontainslogic_label'><div id='filter4_notcontainslogic_label' class='sr-only'>Logic for items that do not contain selected values</div><div class='radio radio-inline'><input id='radio_notcontainslogic__or__4' type='radio' name='filter4_notcontainslogic' value='OR' checked tabindex='0' aria-describedby='filter4_notcontainslogic_desc' role='option'><label for='radio_notcontainslogic__or__4'> OR </label></div><div class='radio radio-inline'><input id='radio_notcontainslogic__and__4' type='radio' name='filter4_notcontainslogic' value='AND' tabindex='0' aria-describedby='filter4_notcontainslogic_desc' role='option'><label for='radio_notcontainslogic__and__4'> AND </label></div><div id='filter4_notcontainslogic_desc' class='sr-only'>Choose logic for items that do not contain selected values</div></div></li><li class='multiselect-item divider'></li>");
+                                                $("#select_filter4").siblings(".btn-group").find(" .multiselect-container.dropdown-menu .multiselect-item.multiselect-group.optgroup_contains").after("<li style='margin-top:5px;padding-left:10px;'><div role='radiogroup' aria-labelledby='filter4_containslogic_label'><div id='filter4_containslogic_label' class='sr-only'>Logic for items that contain selected values</div><div class='radio radio-inline'><input id='radio_containslogic__or__4' type='radio' name='filter4_containslogic' value='OR' checked tabindex='0' aria-describedby='filter4_containslogic_desc' role='option'><label for='radio_containslogic__or__4'> OR </label></div><div class='radio radio-inline'><input id='radio_containslogic__and__4' type='radio' name='filter4_containslogic' value='AND' tabindex='0' aria-describedby='filter4_containslogic_desc' role='option'><label for='radio_containslogic__and__4'> AND </label></div><div id='filter4_containslogic_desc' class='sr-only'>Choose logic for items that contain selected values</div></div></li><li class='multiselect-item divider'></li>");
+                                                $("#select_filter4").siblings(".btn-group").find(" .multiselect-container.dropdown-menu .multiselect-item.multiselect-group.optgroup_does_not_contain").after("<li stydiiv id='filter4_notcontainslogic_label' class='sr-only'>Logic for items that do not contain selected values</div><div class='radio radio-inline'><input id='radio_notcontainslogic__or__4' type='radio' name='filter4_notcontainslogic' value='OR' checked tabindex='0' aria-describedby='filter4_notcontainslogic_desc' role='option'><label for='radio_notcontainslogic__or__4'> OR </label></div><div class='radio radio-inline'><input id='radio_notcontainslogic__and__4' type='radio' name='filter4_notcontainslogic' value='AND' tabindex='0' aria-describedby='filter4_notcontainslogic_desc' role='option'><label for='radio_notcontainslogic__and__4'> AND </label></div><div id='filter4_notcontainslogic_desc' class='sr-only'>Choose logic for items that do not contain selected values</div></div></li><li class='multiselect-item divider'></li>");
 
-                                            var url = new URL(location.href);
-                                            if (url.searchParams.get("category_containslogic") == "AND") {
-                                                $("input[name='filter4_containslogic'][value='AND']").prop("checked", true);
-                                            }
-                                            if (url.searchParams.get("category_notcontainslogic") == "AND") {
+                                                ;
+                                                if (url.searchParams.get("category_containslogic") == "AND") {
+                                                    $("input[name='filter4_containslogic'][value='AND']").prop("checked", true);
+                                                }
+                                ND") {
                                                 $("input[name='filter4_notcontainslogic'][value='AND']").prop("checked", true);
                                             }
 
@@ -15302,7 +15288,6 @@
                                             }
 
                                             $("#select_filter4").bind("change", function () {
-                                                setURLParametersFromFilters();
                                                 getDataFromWebService();
                                                 toggleClearButton();
                                                 shouldDisableSortable();
@@ -15637,7 +15622,7 @@
 
 
                                             $("#select_filter5").siblings(".btn-group").find(" .multiselect.dropdown-toggle").attr("role", "listbox");
-                                            $("#select_filter5").siblings(".btn-group").find(" .multiselect.dropdown-toggle").attr("aria-label", "Event Type");
+          roup").find(".multiselect.dropdown - toggle").attr("aria - label", "Event Type");
                                             $("#select_filter5").siblings(".btn-group").find(" .multiselect.dropdown-toggle").attr("aria-description", "Multi select filter list. Filter by Event Type.");
 
 
@@ -16286,9 +16271,7 @@
                                         <script type="text/javascript">
                                             // console.log('> CHECKPOINT {a00} filter.multiPlaceholder=Event Tags');
                                             // console.log('> CHECKPOINT {a00} filter.multiSearch=False');
-                                            $("#select_filter6").multiselect({
-
-                                                buttonWidth: '100%',
+                                            $("#select_filteronWidth: '100%',
 
                                                 enableHTML: false,
 
@@ -16310,10 +16293,9 @@
                                         </script>
 
                                         <script type="text/javascript">
-                                            if ('' != '' && url.searchParams.get('topic_tags') == null) {
-                                                var url = new URL(location.href);
-                                                url.searchParams.set('topic_tags', '');
-                                                history.replaceState(history.state, '', url.pathname + url.search);
+                                            '                            var url = new URL(location.href);
+                                            url.searchParams.set('topic_tags', '');
+                                            history.replaceState(history.state, '', url.pathname + url.search);
                                             }
 
                                             $("#select_filter6").bind("change", function () {
@@ -16341,8 +16323,7 @@
                                         </select>
 
                                         <script type="text/javascript">
-                                            var selectFilterElem = $("#select_filter7");
-                                            if (selectFilterElem !== null && selectFilterElem.length === 1) {
+                                            var               if (selectFilterElem !== null && selectFilterElem.length === 1) {
                                                 var selectFilterAriaLabel = $(selectFilterElem).attr('aria-label');
                                                 if (selectFilterAriaLabel === undefined || selectFilterAriaLabel === null || selectFilterAriaLabel.trim().length < 1) {
                                                     selectFilterElem.attr("aria-label", "format");
@@ -16357,10 +16338,9 @@
                                         </script>
 
                                         <script type="text/javascript">
-                                            if ('' != '' && url.searchParams.get('format') == null) {
-                                                var url = new URL(location.href);
-                                                url.searchParams.set('format', '');
-                                                history.replaceState(history.state, '', url.pathname + url.search);
+           !=                          var url = new URL(location.href);
+                                            url.searchParams.set('format', '');
+                                            history.replaceState(history.state, '', url.pathname + url.search);
                                             }
 
                                             $("#select_filter7").bind("change", function () {
@@ -16388,8 +16368,7 @@
                                                 the control key to skip backwards over the From Date input.</span></div>
 
                                         <script type="text/javascript">
-                                            var selectFilterElem = $("#select_filter8");
-                                            if (selectFilterElem !== null && selectFilterElem.length === 1) {
+                                            var selectFilte   if (selectFilterElem !== null && selectFilterElem.length === 1) {
                                                 var selectFilterAriaLabel = $(selectFilterElem).attr('aria-label');
                                                 if (selectFilterAriaLabel === undefined || selectFilterAriaLabel === null || selectFilterAriaLabel.trim().length < 1) {
                                                     selectFilterElem.attr("aria-label", "from date");
@@ -16404,10 +16383,9 @@
                                         </script>
 
                                         <script type="text/javascript">
-                                            if ('' != '' && url.searchParams.get('from_date') == null) {
-                                                var url = new URL(location.href);
-                                                url.searchParams.set('from_date', '');
-                                                history.replaceState(history.state, '', url.pathname + url.search);
+                                            '                           var url = new URL(location.href);
+                                            url.searchParams.set('from_date', '');
+                                            history.replaceState(history.state, '', url.pathname + url.search);
                                             }
 
                                             $("#select_filter8").bind("change", function () {
@@ -28935,7 +28913,6 @@
                             $("#lnkLoadMore").hide();
                             var dataLength = data.length
                             for (var i = 0; i < dataLength; i++) {
-                                BindSubmitted(data[i]);
                             }
                             var resultDisplayed = strNumber - 1;
 
@@ -28985,26 +28962,26 @@
                                 beforeShow: function () {
                                     var inputId = "#select_filter8";
                                     var inputValue = $(inputId).attr("value")
-                                    monitorDatePicker(inputId, inputValue);
-                                },
-                                onClose: function (dateText, inst) {
-                                    var inputId = "#select_filter8";
-                                    var focusTargetId = "#keyboard-below-select_filter8";
-                                    datePickerOnClose(inputId, dateText, focusTargetId);
-                                }
+                                    putId, inputValue);
+                        },
+                            onClose: function (dateText, inst) {
+                                var inputId = "#select_filter8";
+                                var focusTargetId = "#keyboard-below-select_filter8";
+                                datePickerOnClose(inputId, dateText, focusTargetId);
+                            }
                             });
-                            $('#select_filter9').datepicker({
-                                beforeShow: function () {
-                                    var inputId = "#select_filter9";
-                                    var inputValue = $(inputId).attr("value")
-                                    monitorDatePicker(inputId, inputValue);
-                                },
-                                onClose: function (dateText, inst) {
-                                    var inputId = "#select_filter9";
-                                    var focusTargetId = "#keyboard-below-select_filter9";
-                                    datePickerOnClose(inputId, dateText, focusTargetId);
-                                }
-                            });
+                        $('#select_filter9').datepicker({
+                            beforeShow: function () {
+                                var inputId = "#select_filter9";
+                                var inputValue = $(inputId).attr("value")
+                                monitorDatePicker(inputId, inputValue);
+                            },
+                            onClose: function (dateText, inst) {
+                                var inputId = "#select_filter9";
+                                var focusTargetId = "#keyboard-below-select_filter9";
+                                datePickerOnClose(inputId, dateText, focusTargetId);
+                            }
+                        });
                         });
 
                         document.addEventListener('ajaxLoadMore', function (e) {
@@ -29098,24 +29075,22 @@
                                             currentTime = currentTime.substr(11, 8);
                                         }
                                         else {
-                                            currentTime = currentTime.substr(14, 5);
+                                            entTime = currentTime.substr(14, 5);
                                         }
-                                        $("#player-time--" + player.youtubeObject.cgID).html(currentTime);
-                                    }, 1000)
+                                        player.youtubeObject.cgID).html(currentTime);
                                 }
-                                else if (event.data == YT.PlayerState.PAUSED || event.data == YT.PlayerState.ENDED) {
-                                    // Change Buttons
+                                else i                             te.PAUSED || event.data == YT.PlayerState.ENDED) {
+                                    uttons
                                     $("#player-btn--" + player.youtubeObject.cgID + " button.playpause").attr("data-status", "play").attr("aria-label", "Play");
                                     $("#player-btn--" + player.youtubeObject.cgID + " button.playpause span.mdi").removeClass("mdi-pause").addClass("mdi-play");
 
                                     clearInterval(player.intervalFunction);
                                     clearInterval(player.intervalTimerFunction);
-                                    player.intervalFunction = null;
+                                    unction = null;
                                     player.intervalTimerFunction = null;
-                                    postVideoViews(player.youtubeObject.cgUID, player.youtubeObject.cgUID_s, player.getCurrentTime(), (event.data == YT.PlayerState.ENDED ? 'true' : ''));
-                                    //if (event.data == YT.PlayerState.ENDED) { 
-                                    //if (typeof refreshTrackChecklist !== "undefined") { refreshTrackChecklist(); }
-                                    //else if (typeof parent.refreshTrackChecklist !== "undefined") { parent.refreshTrackChecklist(); }
+                                    outubeObject.cgUID, player.youtubeObject.cgUID_s, player.getCurrentTime(), (ev                             DED ? 'true' : ''));
+                                    //i                             te.ENDED) { 
+                                    //if (typeof refreshTrackChecklist !== "undefined") { re                                                             //else if (typeof parent.refreshTrackChecklist !== "undefined") { parent.refreshTrackChecklist(); }
                                     //}
                                 }
                             }
@@ -29126,16 +29101,14 @@
                                 else if (currentStatus == "pause") { player.pauseVideo(); }
                             }
 
-                            /* Function that checks localStorage for the Vimeo/YouTube closed captions load policy. Returns number values:
-                             *   0 - closed captions should be be disabled (do not load closed captions)
-                             *   1 - closed captions should be loaded when video loads
-                             * If the local storage key is not defined we return 0 (as a number).
+                            /* Function that checks localStorage for the Vime                            ad policy. Returns number values:
+                             *   0 - closed captions should be be disabled (do                                                        *   1 - closed captions should be loaded when video loads
+                             * If the loc                              we return 0 (as a number).
                              */
-                            function getVideoPlayerCCLoadPolicy() {
+                            f                             olicy() {
                                 try {
-                                    const lsKey = 'cg-video-player-cc-load-policy';
-                                    const ccLoadPolicy = localStorage.getItem(lsKey);
-                                    return (ccLoadPolicy === '1') ? 1 : 0;
+                                    const lsKey = 'cg                             ;
+                                    const ccLoadPolicy = loca                                                             return (ccLoadPolicy === '1') ? 1 : 0;
                                 } catch (e) {
                                     return 0;
                                 }
@@ -29359,7 +29332,7 @@
                                         toggleClosedCaptionsAndReloadVideoIframes();
                                     });
                                     $("#player-btn--" + vimeoObject.cgID + " button.fullscreen").on('click', function () {
-                                        arrVimeoPlayers[index].pause();
+              .pause();
                                         tb_show("", "/video_player?embed=1&uid=" + vimeoObject.cgUID + "&width=995&height=680&modal=true&TB_iframe=1", "");
                                     });
 
@@ -29385,17 +29358,14 @@
                                         }
                                         else {
                                             startTime = startTime.substr(14, 5);
-                                            totalTime = totalTime.substr(14, 5);
-                                        }
-                                        $("#player-btn--" + vimeoObject.cgID + " div.timer").html("<span id='player-time--" + vimeoObject.cgID + "'>" + startTime + "</span> / " + totalTime);
+                                            e = totalTime.substr(1                                }
+                                        $("#player-btn--" + "<span id='player-time--" + vimeoObjectta "</l                                                       }                                               });
+
+                                            arrVime                                    ed;
+
                                     });
-                                });
 
-                                arrVimeoPlayerObjects = undefined;
-
-                            });
-
-                        }
+                                }
                     </script>
 
                     <script>
@@ -29472,47 +29442,44 @@
 
         <!-- Google Analytics -->
         <script>
-            var _customTask = function () {
-                return function (model) {
-                    var piiRegex = [
-                        { name: 'Email', regex: /.{4}@.{4}/g },
-                        { name: 'Phone_Number', regex: /^(\+|\d)[0-9]{7,16}$/g },
-                        { name: 'SSN', regex: /^\d{3}-\d{2}-\d{4}$}/g },
-                        { name: 'Address', regex: /^\d+\s[A-z]+\s[A-z]+/g }];
+                                var _customTask = function () {
+                                    return function (model) {
+                                        var piiRegex = [
+                                            { name: 'Email', regex: /.{4}@.{4}/g },
+                                            { name: 'Phone_Number', regex: /^(\+|\d)[0-9]{7,16}$/g },
+                                            { name: 'SSN', regex: /^\d{3}-\d{2}-\d{4}$}/g },
+                                            { name: 'Address', regex: /^\d+\s[A-z]+\s[A-z]+/g }];
 
-                    var globalSendTaskName = '_' + model.get('trackingId') + '_sendHitTask';
+                                        var globalSendTaskName = '_' + model.get('trackingId') + '_sendHitTask';
 
-                    // Fetch reference to the original sendHitTask
-                    var originalSendTask = window[globalSendTaskName] = window[globalSendTaskName] || model.get('sendHitTask');
-                    var i, hitPayload, parts, val;
+                                        // Fetch reference to the original sendHitTask
+                                        var originalSendTask = window[globalSendTaskName] = window[globalSendTaskName] || model.get('sendHitTask');
+                                        var i, hitPayload, parts, val;
 
-                    // Overwrite sendHitTask with PII purger
-                    model.set('sendHitTask', function (sendModel) {
+                                        // Overwrite sendHitTask with PII purger
+                                        model.set('sendHitTask', function (sendModel) {
 
-                        hitPayload = sendModel.get('hitPayload').split('&');
+                                            hitPayload = sendModel.get('hitPayload').split('&');
 
-                        for (i = 0; i < hitPayload.length; i++) {
-                            parts = hitPayload[i].split('=');
-
-                            // Double-decode, to account for web server encode + analytics.js encode
+                                            for (i = 0; i < hitPayload.length; i++) {
+                                                parts = hitPayload[i].split('                          // Double-decode, to account for web server encode + analytics.js encode
                             try {
-                                val = decodeURIComponent(decodeURIComponent(parts[1]));
-                            } catch (e) {
-                                val = decodeURIComponent(parts[1]);
-                            }
+                                                    C(decodeURIComponent(parts[1]));
+                                                } catch (e) {
+                                                    deURIComponent(parts[1])
+                                                }
 
-                            piiRegex.forEach(function (pii) {
-                                val = val.replace(pii.regex, '[REDACTED ' + pii.name + ']');
-                            });
+                            pii                    nction(pii) {
+                                                    ace(pii.regex, '[REDA                    e + ']');
+                                });
 
-                            parts[1] = encodeURIComponent(val);
-                            hitPayload[i] = parts.join('=');
-                        }
+                                            ncodeURICompo                                           hitPayload[i] = parts.join('=');
+                                    }
 
-                        sendModel.set('hitPayload', hitPayload.join('&'), true);
-                        originalSendTask(sendModel);
-                    });
-                };
+                                    sendModel.set('hitPayload', hitPayload.join('&'), true);
+                                    ig(sendModel);
+                                });
+            };
             }
         </script>
 
@@ -29522,25 +29489,25 @@
 
         <!-- Pendo -->
         <script>
-                (function (apiKey) {
-                    (function (p, e, n, d, o) {
-                        var v, w, x, y, z; o = p[d] = p[d] || {}; o._q = o._q || [];
-                        v = ['initialize', 'identify', 'updateOptions', 'pageLoad', 'track']; for (w = 0, x = v.length; w < x; ++w)(function (m) {
-                            o[m] = o[m] || function () { o._q[m === v[0] ? 'unshift' : 'push']([m].concat([].slice.call(arguments, 0))); };
-                        })(v[w]);
-                        y = e.createElement(n); y.async = !0; y.src = 'https://cdn.eu.pendo.io/agent/static/' + apiKey + '/pendo.js';
-                        z = e.getElementsByTagName(n)[0]; z.parentNode.insertBefore(y, z);
-                    })(window, document, 'script', 'pendo');
-                    pendo.initialize({
-                        visitor: {
-                            id: "f6cc8b11-0d3a-11f0-86f3-0ea371ea8909",
-                            accountTypeLookupType: "student"
-                        },
-                        account: {
-                            id: "arizonau"
-                        }
-                    });
-                })('fd9c51b9-abf2-4c23-76c6-8860887d5042');
+            (function (apiKey) {
+                (function (p, e, n, d, o) {
+                    var v, w, x, y, z; o = p[d] = p[d] || {}; o._q = o._q || [];
+                    v = ['initialize', 'identify', 'updateOptions', 'pageLoad', 'track']; for (w = 0, x = v.length; w < x; ++w)(function (m) {
+                        o[m] = o[m] || function () { o._q[m === v[0] ? 'unshift' : 'push']([m].concat([].slice.call(arguments, 0))); };
+                    })(v[w]);
+                    y = e.createElement(n); y.async = !0; y.src = 'https://cdn.eu.pendo.io/agent/static/' + apiKey + '/pendo.js';
+                    z = e.getElementsByTagName(n)[0]; z.parentNode.insertBefore(y, z);
+                })(window, document, 'script', 'pendo');
+                pendo.initialize({
+                    visitor: {
+                        id: "f6cc8b11-0d3a-11f0-86f3-0ea371ea8909",
+                        accountTypeLookupType: "student"
+                    },
+                    account: {
+                        id: "arizonau"
+                    }
+                });
+            })('fd9c51b9-abf2-4c23-76c6-8860887d5042');
         </script>
         <!-- End Pendo -->
 
@@ -29630,6 +29597,117 @@
     <div id="preact-border-shadow-host" popover="manual"
         style="border: none; padding: 0px; margin: 0px; inset: 0px; position: fixed; width: 100vw; height: 100vh; background: transparent; pointer-events: none;">
     </div>
+    <style>
+        /* Force 2-row layout and correct heights */
+        #listing__filters--search-cont,
+        #listing__filters-cont {
+            height: auto;
+            min-height: 48px;
+            /* Match standard button height if needed */
+        }
+
+        /* Fix mismatch between search input and button */
+        #listing__filters--search-cont .input-group .form-control {
+            height: 38px !important;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        #listing__filters--search-cont .input-group .input-group-btn .btn {
+            height: 38px !important;
+            padding: 8px 12px;
+            line-height: 20px;
+        }
+
+        /* Fix Download Button Height */
+        /* Target buttons in the page header button container */
+        .page__header--btns .btn {
+            height: 38px !important;
+            line-height: 38px !important;
+            /* Center text vertically */
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Ensure specific overrides for border radius don't break flex layout (they are fine) */
+
+        /* Fix dropdown button height/style */
+        .select-group .btn-group .multiselect {
+            height: 38px !important;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        /* Ensure caret is visible */
+        .multiselect .caret {
+            display: inline-block;
+            width: 0;
+            height: 0;
+            margin-left: 2px;
+            vertical-align: middle;
+            border-top: 4px dashed;
+            border-top: 4px solid \9;
+            border-right: 4px solid transparent;
+            border-left: 4px solid transparent;
+        }
+
+        /* Fix Date Picker height */
+        #listing_daterange {
+            height: 38px !important;
+        }
+
+        /* General Spacing */
+        .select-group {
+            margin-bottom: 0px !important;
+        }
+    </style>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            console.log("Forcing re-initialization of components...");
+
+            // Re-init Multiselects
+            $('#select_filter1, #select_filter2').multiselect({
+                buttonClass: 'btn btn-default form-control',
+                buttonWidth: '100%',
+                numberDisplayed: 1,
+                includeSelectAllOption: false,
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-toggle="dropdown"><span class="multiselect-selected-text"></span> <b class="caret"></b></button>'
+                }
+            });
+
+            // Re-init Datepicker (assuming daterangepicker or similar)
+            if (typeof $.fn.daterangepicker === 'function') {
+                $('#listing_daterange').daterangepicker({
+                    autoUpdateInput: false,
+                    locale: {
+                        cancelLabel: 'Clear'
+                    }
+                });
+                $('#listing_daterange').on('apply.daterangepicker', function (ev, picker) {
+                    $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+                });
+                $('#listing_daterange').on('cancel.daterangepicker', function (ev, picker) {
+                    $(this).val('');
+                });
+            } else if (typeof $.fn.datepicker === 'function') {
+                $('#listing_daterange').datepicker({
+                    format: "mm/dd/yyyy",
+                    autoclose: true
+                });
+            }
+
+            // Fix icon alignment if needed
+            $('.input-group-btn .mdi').css('line-height', '1');
+        });
+    </script>
 </body><!-- END AX != 1 -->
 
 </html>
