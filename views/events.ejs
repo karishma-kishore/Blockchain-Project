@@ -2202,6 +2202,20 @@
 
                         <!-- /.Event Button -->
 
+                        <!-- Wallet Button -->
+                        <li id="header__btn-cont--wallet" class="">
+                            <a class="topbar__menu topbar__menu--large" href="wallet.html" aria-label="Wallet">
+                                <span class="topbar__menu-icon">
+                                    <span class="mdi mdi-wallet mdi-24px aria-decorative" role="presentation"
+                                        aria-hidden="true"></span>
+                                </span>
+                                <span class="topbar__menu-text">
+                                    <small> Wallet </small>
+                                </span>
+                            </a>
+                        </li>
+                        <!-- /.Wallet Button -->
+
                         <!-- Chat Button -->
 
                         <!-- /.Chat Button -->
@@ -16470,28 +16484,34 @@
                             <ul id="divAllItems" class="list-group">
 
                                 <%# Dynamic event list rendered from JSON data %>
-                                <% if (events && events.length > 0) { %>
-                                    <% let currentDate = ''; %>
-                                    <% events.forEach(function(event, index) { %>
-                                        <%# Date separator - group events by day %>
-                                        <% 
-                                            const eventDate = event.date_line1 ? event.date_line1.split(' ').slice(0, 3).join(' ') : '';
+                                    <% if (events && events.length> 0) { %>
+                                        <% let currentDate='' ; %>
+                                            <% events.forEach(function(event, index) { %>
+                                                <%# Date separator - group events by day %>
+                                                    <% const eventDate=event.date_line1 ?
+                                                        event.date_line1.split(' ').slice(0, 3).join(' ') : '';
                                             if (eventDate !== currentDate) { 
                                                 currentDate = eventDate;
                                         %>
                                         <li class="list-group__separator">
-                                            <h2 class="header-cg--h4" role="region" aria-label="Events on <%= currentDate %>"><%= currentDate || 'Upcoming' %></h2>
-                                        </li>
-                                        <% } %>
-                                        
-                                        <%- include('partials/event-item', { event: event }) %>
-                                    <% }); %>
-                                <% } else { %>
-                                    <li style="display: block;">
-                                        <div id="no_result_img" style="height: 80px;width: 80px;margin: 0px auto;margin-top:30px;margin-bottom:25px; background:url(/images/listing-noresult.png) no-repeat;"></div>
-                                        <div id="no_result_txt" style="text-align:center;line-height:0px;margin-bottom:40px;font-size:16px;color:#4c728d;">No events found</div>
-                                    </li>
-                                <% } %>
+                                            <h2 class="header-cg--h4" role="region" aria-label="Events on <%= currentDate %>"><%= currentDate || '
+                                                        Upcoming' %>
+                                                        </h2>
+                                                        </li>
+                                                        <% } %>
+
+                                                            <%- include('partials/event-item', { event: event }) %>
+                                                                <% }); %>
+                                                                    <% } else { %>
+                                                                        <li style="display: block;">
+                                                                            <div id="no_result_img"
+                                                                                style="height: 80px;width: 80px;margin: 0px auto;margin-top:30px;margin-bottom:25px; background:url(/images/listing-noresult.png) no-repeat;">
+                                                                            </div>
+                                                                            <div id="no_result_txt"
+                                                                                style="text-align:center;line-height:0px;margin-bottom:40px;font-size:16px;color:#4c728d;">
+                                                                                No events found</div>
+                                                                        </li>
+                                                                        <% } %>
 
                             </ul>
 

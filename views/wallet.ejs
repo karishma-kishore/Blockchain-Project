@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDC Wallet - Sun Devil Central</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="images/x-icon"
+        href="upload/arizonau/2025/s1_image_upload_599708_2025SunDevilCentralFavicon25x25_515151640.png">
+
+    <!-- CSS Dependencies -->
+    <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="bower_components/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" type="text/css" href="static/css/header.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-customV.css">
+    <link rel="stylesheet" type="text/css" href="css/wallet.css">
+    <link href="css/fonts/open-sans.css" rel="stylesheet" type="text/css">
+
+    <!-- JS Dependencies -->
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <!-- ethers.js from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.9.0/dist/ethers.umd.min.js"></script>
+
+    <!-- SDC Configuration -->
+    <script src="js/sdc-config.js"></script>
+
+    <style>
+        .btn--school {
+            background-color: #8c1d40;
+            color: #fff;
+        }
+
+        .btn--school:hover,
+        .btn--school:focus {
+            background-color: #8c1d40;
+            color: #fff;
+        }
+
+        .topbar {
+            background: #ffc627;
+            border-color: #ffc627;
+        }
+
+        .topbar ul.nav>li>a:hover,
+        .topbar ul.nav>li>button:hover {
+            background-color: #8c1d40 !important;
+        }
+
+        .topbar ul.nav>li>a:focus,
+        .topbar ul.nav>li>button:focus {
+            background-color: #8c1d40 !important;
+            outline: none;
+        }
+
+        .topbar li.active>a,
+        .topbar li.active>button {
+            background-color: #8c1d40 !important;
+        }
+    </style>
+</head>
+
+<body class="body-background enlarged">
+    <!-- HEADER -->
+    <div id="outer-shell" class="outer-shell">
+        <div id="topbar" class="topbar topbar-app topbar--has-toggle topbar--light topbar--reverse" role="navigation"
+            aria-label="Topbar">
+
+            <div class="topbar__left">
+                <button id="button-menu-mobile" class="topbar__sidebar-toggle button-menu-mobile" role="button"
+                    aria-label="Toggle navigation menu">
+                    <span class="topbar__menu-icon">
+                        <span class="mdi mdi-menu mdi-24px" role="presentation" aria-hidden="true"></span>
+                    </span>
+                </button>
+
+                <a href="home.html" class="logo" style="text-decoration: none;">
+                    <span>
+                        <img class="hidden-xs hidden-sm hidden-md"
+                            src="upload/arizonau/2025/image_upload_599708_logo_rgbk_53003354.png"
+                            alt="Arizona State University" style="max-height: 50px; max-width: 165px;">
+                    </span>
+                    <span>
+                        <img class="hidden-lg"
+                            src="upload/arizonau/2025/image_upload_599708_2025SunDevilCentralHubIcon200x2002jpg_51516338.jpeg"
+                            alt="Arizona State University" style="max-height: 35px; max-width: 35px; margin: 0 5px;">
+                    </span>
+                </a>
+            </div>
+
+            <div class="topbar__center">
+                <nav aria-label="Topbar">
+                    <ul class="nav">
+                        <!-- Home Button -->
+                        <li id="header__btn-cont--home" class="hidden-xs">
+                            <a class="hidden-xs topbar__menu topbar__menu--large" href="home.html" aria-label="Home">
+                                <span class="topbar__menu-icon">
+                                    <span class="mdi mdi-home mdi-24px" role="presentation" aria-hidden="true"></span>
+                                </span>
+                                <span class="topbar__menu-text">
+                                    <small class="hidden-xxs hidden-xs"> Home </small>
+                                </span>
+                            </a>
+                        </li>
+
+                        <!-- Events Button -->
+                        <li id="header__btn-cont--events" class="">
+                            <a class="topbar__menu topbar__menu--large" href="events.html" aria-label="Events">
+                                <span class="topbar__menu-icon">
+                                    <span class="mdi mdi-calendar mdi-24px" role="presentation"
+                                        aria-hidden="true"></span>
+                                </span>
+                                <span class="topbar__menu-text">
+                                    <small> Events </small>
+                                </span>
+                            </a>
+                        </li>
+
+                        <!-- Wallet Button (Active) -->
+                        <li id="header__btn-cont--wallet" class="active">
+                            <a class="topbar__menu topbar__menu--large" href="wallet.html" aria-label="Wallet"
+                                aria-current="true">
+                                <span class="topbar__menu-icon">
+                                    <span class="mdi mdi-wallet mdi-24px" role="presentation" aria-hidden="true"></span>
+                                </span>
+                                <span class="topbar__menu-text">
+                                    <small> Wallet </small>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="topbar__right">
+                <!-- Notification bell placeholder -->
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content-page">
+            <div class="content">
+                <div class="wallet-container">
+                    <div class="wallet-header">
+                        <h1><span class="mdi mdi-wallet"></span> SDC Wallet</h1>
+                        <p>Manage your SunDevil Coins on the Polygon Amoy blockchain</p>
+                    </div>
+
+                    <!-- Connection Card -->
+                    <div id="connection-section" class="wallet-card connection-card">
+                        <h2><span class="mdi mdi-ethereum"></span> Wallet Connection</h2>
+
+                        <div id="metamask-not-installed" style="display: none;">
+                            <div class="metamask-install">
+                                <span class="mdi mdi-puzzle" style="font-size: 4rem; color: #f6851b;"></span>
+                                <h3>MetaMask Required</h3>
+                                <p>Please install MetaMask browser extension to connect your wallet</p>
+                                <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer"
+                                    class="btn-wallet btn-install">
+                                    <span class="mdi mdi-download"></span> Install MetaMask
+                                </a>
+                            </div>
+                        </div>
+
+                        <div id="wallet-disconnected" style="display: none;">
+                            <div class="wallet-status">
+                                <span class="status-indicator disconnected"></span>
+                                <span>Not Connected</span>
+                            </div>
+                            <button id="btn-connect" class="btn-wallet btn-connect">
+                                <span class="mdi mdi-wallet-plus"></span> Connect Wallet
+                            </button>
+                        </div>
+
+                        <div id="wallet-connected" style="display: none;">
+                            <div class="wallet-status">
+                                <span class="status-indicator connected"></span>
+                                <span>Connected</span>
+                                <span id="network-badge" class="network-badge"></span>
+                            </div>
+                            <div class="wallet-address" id="wallet-address"></div>
+                            <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap;">
+                                <button id="btn-switch-network" class="btn-wallet btn-switch" style="display: none;">
+                                    <span class="mdi mdi-swap-horizontal"></span> Switch to Amoy
+                                </button>
+                                <button id="btn-disconnect" class="btn-wallet btn-disconnect">
+                                    <span class="mdi mdi-logout"></span> Disconnect
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content shown when wallet is connected -->
+                    <div id="wallet-content" style="display: none;">
+
+                        <div class="wallet-row">
+                            <!-- Balance Card -->
+                            <div class="wallet-card">
+                                <h2><span class="mdi mdi-currency-usd"></span> Your Balance</h2>
+                                <div class="balance-display">
+                                    <div class="balance-amount" id="balance-amount">0</div>
+                                    <div class="balance-symbol">SDC</div>
+                                </div>
+                                <button id="btn-refresh-balance" class="btn-wallet btn-send"
+                                    style="background: #6c757d;">
+                                    <span class="mdi mdi-refresh"></span> Refresh Balance
+                                </button>
+                            </div>
+
+                            <!-- Claim Card -->
+                            <div class="wallet-card claim-card">
+                                <h2><span class="mdi mdi-gift"></span> Claimable Tokens</h2>
+                                <div class="claim-info">
+                                    <div class="claim-amount" id="claimable-amount">0 SDC</div>
+                                    <p>Earned from event RSVPs and participation</p>
+                                </div>
+                                <div class="claim-breakdown" id="claim-breakdown">
+                                    <!-- Claims will be populated here -->
+                                </div>
+                                <button id="btn-claim" class="btn-wallet btn-claim" disabled>
+                                    <span class="mdi mdi-check-circle"></span> Claim Tokens
+                                </button>
+                                <div id="claim-status"></div>
+                            </div>
+                        </div>
+
+                        <!-- Transfer Card -->
+                        <div class="wallet-card">
+                            <h2><span class="mdi mdi-send"></span> Send Tokens</h2>
+                            <form id="transfer-form" class="transfer-form">
+                                <div class="form-group">
+                                    <label for="recipient-address">Recipient Address</label>
+                                    <input type="text" id="recipient-address" placeholder="0x..." required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="transfer-amount">Amount (SDC)</label>
+                                    <input type="number" id="transfer-amount" placeholder="0.0" min="0" step="any"
+                                        required>
+                                </div>
+                                <button type="submit" id="btn-transfer" class="btn-wallet btn-send">
+                                    <span class="mdi mdi-send"></span> Send SDC
+                                </button>
+                            </form>
+                            <div id="transfer-status"></div>
+                        </div>
+
+                        <!-- Goodies Card -->
+                        <div class="wallet-card">
+                            <h2><span class="mdi mdi-star-circle"></span> Redeem Goodies</h2>
+                            <p style="color: #666; margin-bottom: 20px;">Use your SDC tokens to claim educational
+                                software and resources</p>
+                            <div class="goodies-grid" id="goodies-grid">
+                                <!-- Goodies will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Message shown when wallet is not connected -->
+                    <div id="no-wallet-message" style="display: none;">
+                        <div class="wallet-card">
+                            <div class="no-wallet-message">
+                                <span class="mdi mdi-wallet-outline"></span>
+                                <h3>Connect Your Wallet</h3>
+                                <p>Connect your MetaMask wallet to view your balance, claim tokens, and redeem goodies.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Wallet state
+        let account = null;
+        let provider = null;
+        let signer = null;
+        let contract = null;
+        let isCorrectNetwork = false;
+
+        // DOM elements
+        const elements = {
+            metamaskNotInstalled: document.getElementById('metamask-not-installed'),
+            walletDisconnected: document.getElementById('wallet-disconnected'),
+            walletConnected: document.getElementById('wallet-connected'),
+            walletContent: document.getElementById('wallet-content'),
+            noWalletMessage: document.getElementById('no-wallet-message'),
+            walletAddress: document.getElementById('wallet-address'),
+            networkBadge: document.getElementById('network-badge'),
+            balanceAmount: document.getElementById('balance-amount'),
+            claimableAmount: document.getElementById('claimable-amount'),
+            claimBreakdown: document.getElementById('claim-breakdown'),
+            goodiesGrid: document.getElementById('goodies-grid'),
+            btnConnect: document.getElementById('btn-connect'),
+            btnDisconnect: document.getElementById('btn-disconnect'),
+            btnSwitchNetwork: document.getElementById('btn-switch-network'),
+            btnRefreshBalance: document.getElementById('btn-refresh-balance'),
+            btnClaim: document.getElementById('btn-claim'),
+            btnTransfer: document.getElementById('btn-transfer'),
+            transferForm: document.getElementById('transfer-form'),
+            claimStatus: document.getElementById('claim-status'),
+            transferStatus: document.getElementById('transfer-status')
+        };
+
+        // Check if MetaMask is installed
+        const hasMetaMask = typeof window.ethereum !== 'undefined';
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function () {
+            if (!hasMetaMask) {
+                elements.metamaskNotInstalled.style.display = 'block';
+                elements.noWalletMessage.style.display = 'block';
+            } else {
+                elements.walletDisconnected.style.display = 'block';
+                elements.noWalletMessage.style.display = 'block';
+
+                // Check if already connected
+                checkExistingConnection();
+
+                // Listen for account changes
+                window.ethereum.on('accountsChanged', handleAccountsChanged);
+                window.ethereum.on('chainChanged', handleChainChanged);
+            }
+
+            // Load goodies
+            renderGoodies();
+
+            // Event listeners
+            elements.btnConnect.addEventListener('click', connect);
+            elements.btnDisconnect.addEventListener('click', disconnect);
+            elements.btnSwitchNetwork.addEventListener('click', switchNetwork);
+            elements.btnRefreshBalance.addEventListener('click', fetchBalance);
+            elements.btnClaim.addEventListener('click', claimTokens);
+            elements.transferForm.addEventListener('submit', handleTransfer);
+        });
+
+        async function checkExistingConnection() {
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                if (accounts.length > 0) {
+                    await setupWallet(accounts[0]);
+                }
+            } catch (err) {
+                console.error('Error checking existing connection:', err);
+            }
+        }
+
+        async function connect() {
+            if (!hasMetaMask) return;
+
+            elements.btnConnect.disabled = true;
+            elements.btnConnect.innerHTML = '<span class="spinner"></span> Connecting...';
+
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                if (accounts.length > 0) {
+                    await setupWallet(accounts[0]);
+                }
+            } catch (err) {
+                console.error('Connection error:', err);
+                showStatus(elements.claimStatus, 'error', err.message || 'Failed to connect');
+            } finally {
+                elements.btnConnect.disabled = false;
+                elements.btnConnect.innerHTML = '<span class="mdi mdi-wallet-plus"></span> Connect Wallet';
+            }
+        }
+
+        async function setupWallet(walletAddress) {
+            account = walletAddress;
+
+            // Setup ethers provider and contract
+            provider = new ethers.BrowserProvider(window.ethereum);
+            signer = await provider.getSigner();
+            contract = new ethers.Contract(SDC_CONFIG.CONTRACT_ADDRESS, SDC_CONFIG.ABI, signer);
+
+            // Update UI
+            updateConnectionUI();
+
+            // Check network
+            await checkNetwork();
+
+            // Fetch data
+            await fetchBalance();
+            await fetchClaimable();
+        }
+
+        function disconnect() {
+            account = null;
+            provider = null;
+            signer = null;
+            contract = null;
+            isCorrectNetwork = false;
+
+            updateConnectionUI();
+        }
+
+        function updateConnectionUI() {
+            if (account) {
+                elements.walletDisconnected.style.display = 'none';
+                elements.walletConnected.style.display = 'block';
+                elements.walletContent.style.display = 'block';
+                elements.noWalletMessage.style.display = 'none';
+
+                // Display shortened address
+                const shortened = account.slice(0, 6) + '...' + account.slice(-4);
+                elements.walletAddress.textContent = shortened;
+            } else {
+                elements.walletDisconnected.style.display = 'block';
+                elements.walletConnected.style.display = 'none';
+                elements.walletContent.style.display = 'none';
+                elements.noWalletMessage.style.display = 'block';
+                elements.balanceAmount.textContent = '0';
+            }
+        }
+
+        async function checkNetwork() {
+            try {
+                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                isCorrectNetwork = parseInt(chainId, 16) === SDC_CONFIG.CHAIN_ID;
+
+                if (isCorrectNetwork) {
+                    elements.networkBadge.className = 'network-badge correct';
+                    elements.networkBadge.innerHTML = '<span class="mdi mdi-check-circle"></span> Polygon Amoy';
+                    elements.btnSwitchNetwork.style.display = 'none';
+                } else {
+                    elements.networkBadge.className = 'network-badge wrong';
+                    elements.networkBadge.innerHTML = '<span class="mdi mdi-alert-circle"></span> Wrong Network';
+                    elements.btnSwitchNetwork.style.display = 'inline-flex';
+                }
+            } catch (err) {
+                console.error('Error checking network:', err);
+            }
+        }
+
+        async function switchNetwork() {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: SDC_CONFIG.CHAIN_ID_HEX }]
+                });
+            } catch (switchError) {
+                // Chain not added, try to add it
+                if (switchError.code === 4902) {
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [SDC_CONFIG.NETWORK_CONFIG]
+                        });
+                    } catch (addError) {
+                        console.error('Error adding network:', addError);
+                        showStatus(elements.claimStatus, 'error', 'Failed to add Polygon Amoy network');
+                    }
+                } else {
+                    console.error('Error switching network:', switchError);
+                }
+            }
+        }
+
+        async function fetchBalance() {
+            if (!contract || !account) return;
+
+            try {
+                const balance = await contract.balanceOf(account);
+                const formatted = parseFloat(ethers.formatEther(balance)).toFixed(2);
+                elements.balanceAmount.textContent = formatted;
+            } catch (err) {
+                console.error('Error fetching balance:', err);
+            }
+        }
+
+        async function fetchClaimable() {
+            try {
+                const response = await fetch('/api/sdc');
+                const data = await response.json();
+
+                elements.claimableAmount.textContent = data.claimable + ' SDC';
+                elements.btnClaim.disabled = data.claimable === 0;
+
+                // Render claim breakdown
+                if (data.claims && data.claims.length > 0) {
+                    elements.claimBreakdown.innerHTML = data.claims.map(claim => `
+                        <div class="claim-item">
+                            <span class="event-name">Event #${claim.eventId}</span>
+                            <span class="event-amount">+${claim.amount} SDC</span>
+                        </div>
+                    `).join('');
+                } else {
+                    elements.claimBreakdown.innerHTML = '<p style="text-align: center; color: #888;">No claimable tokens</p>';
+                }
+            } catch (err) {
+                console.error('Error fetching claimable:', err);
+            }
+        }
+
+        async function claimTokens() {
+            if (!account || !isCorrectNetwork) {
+                showStatus(elements.claimStatus, 'error', 'Please connect wallet and switch to Polygon Amoy');
+                return;
+            }
+
+            elements.btnClaim.disabled = true;
+            elements.btnClaim.innerHTML = '<span class="spinner"></span> Claiming...';
+            showStatus(elements.claimStatus, 'pending', 'Processing claim request...');
+
+            try {
+                const response = await fetch('/api/claim', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ walletAddress: account })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showStatus(elements.claimStatus, 'success',
+                        `Successfully claimed ${result.amount} SDC! <a href="https://amoy.polygonscan.com/tx/${result.txHash}" target="_blank">View Transaction</a>`);
+                    await fetchBalance();
+                    await fetchClaimable();
+                } else {
+                    showStatus(elements.claimStatus, 'error', result.error || 'Claim failed');
+                }
+            } catch (err) {
+                console.error('Claim error:', err);
+                showStatus(elements.claimStatus, 'error', err.message || 'Failed to claim tokens');
+            } finally {
+                elements.btnClaim.disabled = false;
+                elements.btnClaim.innerHTML = '<span class="mdi mdi-check-circle"></span> Claim Tokens';
+            }
+        }
+
+        async function handleTransfer(e) {
+            e.preventDefault();
+
+            const recipient = document.getElementById('recipient-address').value;
+            const amount = document.getElementById('transfer-amount').value;
+
+            if (!ethers.isAddress(recipient)) {
+                showStatus(elements.transferStatus, 'error', 'Invalid recipient address');
+                return;
+            }
+
+            if (!amount || parseFloat(amount) <= 0) {
+                showStatus(elements.transferStatus, 'error', 'Please enter a valid amount');
+                return;
+            }
+
+            if (!isCorrectNetwork) {
+                showStatus(elements.transferStatus, 'error', 'Please switch to Polygon Amoy network');
+                return;
+            }
+
+            elements.btnTransfer.disabled = true;
+            elements.btnTransfer.innerHTML = '<span class="spinner"></span> Sending...';
+            showStatus(elements.transferStatus, 'pending', 'Please confirm the transaction in MetaMask...');
+
+            try {
+                const amountWei = ethers.parseEther(amount);
+                const tx = await contract.transfer(recipient, amountWei);
+
+                showStatus(elements.transferStatus, 'pending', 'Transaction submitted, waiting for confirmation...');
+
+                const receipt = await tx.wait();
+
+                showStatus(elements.transferStatus, 'success',
+                    `Successfully sent ${amount} SDC! <a href="https://amoy.polygonscan.com/tx/${receipt.hash}" target="_blank">View Transaction</a>`);
+
+                await fetchBalance();
+
+                // Clear form
+                document.getElementById('recipient-address').value = '';
+                document.getElementById('transfer-amount').value = '';
+            } catch (err) {
+                console.error('Transfer error:', err);
+                showStatus(elements.transferStatus, 'error', err.reason || err.message || 'Transfer failed');
+            } finally {
+                elements.btnTransfer.disabled = false;
+                elements.btnTransfer.innerHTML = '<span class="mdi mdi-send"></span> Send SDC';
+            }
+        }
+
+        function renderGoodies() {
+            const goodies = SDC_CONFIG.GOODIES;
+            elements.goodiesGrid.innerHTML = goodies.map(goodie => `
+                <div class="goodie-item">
+                    <div class="goodie-header">
+                        <div class="goodie-icon">
+                            <span class="mdi ${goodie.icon}"></span>
+                        </div>
+                        <div>
+                            <div class="goodie-title">${goodie.name}</div>
+                            <div class="goodie-category">${goodie.category}</div>
+                        </div>
+                    </div>
+                    <p class="goodie-description">${goodie.description}</p>
+                    <div class="goodie-footer">
+                        <div class="goodie-cost">
+                            <span class="mdi mdi-currency-usd"></span>
+                            ${goodie.cost} SDC
+                        </div>
+                        <button class="btn-wallet btn-redeem" onclick="redeemGoodie('${goodie.id}', ${goodie.cost})">
+                            Redeem
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function redeemGoodie(goodieId, cost) {
+            if (!account || !isCorrectNetwork) {
+                alert('Please connect your wallet and switch to Polygon Amoy network');
+                return;
+            }
+
+            const balance = parseFloat(elements.balanceAmount.textContent);
+            if (balance < cost) {
+                alert(`Insufficient balance. You need ${cost} SDC but only have ${balance} SDC.`);
+                return;
+            }
+
+            // For demo purposes, just show a message
+            // In production, this would burn tokens and issue the reward
+            alert(`Redeeming ${goodieId} for ${cost} SDC... (Demo mode - no actual transaction)`);
+        }
+
+        function showStatus(element, type, message) {
+            element.innerHTML = `
+                <div class="tx-status ${type}">
+                    ${type === 'pending' ? '<span class="spinner" style="border-color: #856404; border-top-color: transparent;"></span>' : ''}
+                    ${type === 'success' ? '<span class="mdi mdi-check-circle"></span>' : ''}
+                    ${type === 'error' ? '<span class="mdi mdi-alert-circle"></span>' : ''}
+                    <span>${message}</span>
+                </div>
+            `;
+        }
+
+        function handleAccountsChanged(accounts) {
+            if (accounts.length === 0) {
+                disconnect();
+            } else if (accounts[0] !== account) {
+                setupWallet(accounts[0]);
+            }
+        }
+
+        function handleChainChanged() {
+            checkNetwork();
+            fetchBalance();
+        }
+    </script>
+</body>
+
+</html>

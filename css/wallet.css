@@ -1,0 +1,566 @@
+/* Wallet Page Styles */
+
+/* Root variables matching ASU branding */
+:root {
+    --asu-maroon: #8c1d40;
+    --asu-gold: #ffc627;
+    --asu-dark: #1a1a1a;
+    --wallet-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    --card-hover-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Main wallet container */
+.wallet-container {
+    padding: 30px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.wallet-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.wallet-header h1 {
+    font-size: 2.5rem;
+    color: var(--asu-maroon);
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.wallet-header p {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+/* Card base styles */
+.wallet-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: var(--card-shadow);
+    padding: 24px;
+    margin-bottom: 24px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.wallet-card:hover {
+    box-shadow: var(--card-hover-shadow);
+    transform: translateY(-2px);
+}
+
+.wallet-card h2 {
+    font-size: 1.4rem;
+    color: var(--asu-dark);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--asu-gold);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.wallet-card h2 .mdi {
+    color: var(--asu-maroon);
+    font-size: 1.6rem;
+}
+
+/* Connection card */
+.connection-card {
+    background: linear-gradient(135deg, var(--asu-maroon) 0%, #5a1028 100%);
+    color: #fff;
+}
+
+.connection-card h2 {
+    color: #fff;
+    border-bottom-color: var(--asu-gold);
+}
+
+.connection-card h2 .mdi {
+    color: var(--asu-gold);
+}
+
+.wallet-status {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.status-indicator.connected {
+    background: var(--success-color);
+    box-shadow: 0 0 10px var(--success-color);
+}
+
+.status-indicator.disconnected {
+    background: var(--danger-color);
+    box-shadow: 0 0 10px var(--danger-color);
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.wallet-address {
+    font-family: 'Courier New', monospace;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    word-break: break-all;
+}
+
+.network-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.network-badge.correct {
+    background: rgba(40, 167, 69, 0.2);
+    color: #4ade80;
+}
+
+.network-badge.wrong {
+    background: rgba(220, 53, 69, 0.2);
+    color: #f87171;
+}
+
+/* Balance card */
+.balance-display {
+    text-align: center;
+    padding: 30px 0;
+}
+
+.balance-amount {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--asu-maroon);
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.balance-symbol {
+    font-size: 1.5rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.balance-usd {
+    font-size: 1rem;
+    color: #888;
+    margin-top: 8px;
+}
+
+/* Claim card */
+.claim-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px dashed var(--asu-gold);
+}
+
+.claim-amount {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--success-color);
+    text-align: center;
+}
+
+.claim-info {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.claim-info p {
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.claim-breakdown {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    margin: 20px 0;
+}
+
+.claim-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.claim-item:last-child {
+    border-bottom: none;
+}
+
+.claim-item .event-name {
+    color: #333;
+    font-weight: 500;
+}
+
+.claim-item .event-amount {
+    color: var(--success-color);
+    font-weight: 600;
+}
+
+/* Transfer card */
+.transfer-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+.form-group input {
+    padding: 14px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--asu-maroon);
+    box-shadow: 0 0 0 3px rgba(140, 29, 64, 0.1);
+}
+
+.form-group input::placeholder {
+    color: #aaa;
+}
+
+/* Buttons */
+.btn-wallet {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    text-decoration: none;
+}
+
+.btn-wallet:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-connect {
+    background: var(--asu-gold);
+    color: var(--asu-dark);
+}
+
+.btn-connect:hover:not(:disabled) {
+    background: #e6b322;
+    transform: scale(1.02);
+}
+
+.btn-disconnect {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-disconnect:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.btn-switch {
+    background: var(--warning-color);
+    color: var(--asu-dark);
+}
+
+.btn-switch:hover:not(:disabled) {
+    background: #e0a800;
+}
+
+.btn-claim {
+    background: var(--success-color);
+    color: #fff;
+    width: 100%;
+}
+
+.btn-claim:hover:not(:disabled) {
+    background: #218838;
+    transform: scale(1.01);
+}
+
+.btn-send {
+    background: var(--asu-maroon);
+    color: #fff;
+    width: 100%;
+}
+
+.btn-send:hover:not(:disabled) {
+    background: #6d162f;
+    transform: scale(1.01);
+}
+
+.btn-redeem {
+    background: var(--wallet-gradient);
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+}
+
+.btn-redeem:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: scale(1.02);
+}
+
+/* Goodies grid */
+.goodies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.goodie-item {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.goodie-item:hover {
+    border-color: var(--asu-maroon);
+    box-shadow: 0 4px 12px rgba(140, 29, 64, 0.1);
+}
+
+.goodie-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.goodie-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--asu-maroon) 0%, #5a1028 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.goodie-icon .mdi {
+    font-size: 1.8rem;
+    color: #fff;
+}
+
+.goodie-title {
+    font-weight: 600;
+    color: #333;
+    font-size: 1.05rem;
+    line-height: 1.3;
+}
+
+.goodie-category {
+    font-size: 0.8rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.goodie-description {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 16px;
+}
+
+.goodie-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.goodie-cost {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    color: var(--asu-maroon);
+    font-size: 1.1rem;
+}
+
+.goodie-cost .mdi {
+    color: var(--asu-gold);
+}
+
+/* Transaction status */
+.tx-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px;
+    border-radius: 10px;
+    margin-top: 16px;
+}
+
+.tx-status.pending {
+    background: rgba(255, 193, 7, 0.1);
+    color: #856404;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.tx-status.success {
+    background: rgba(40, 167, 69, 0.1);
+    color: #155724;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.tx-status.error {
+    background: rgba(220, 53, 69, 0.1);
+    color: #721c24;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.tx-status a {
+    color: inherit;
+    text-decoration: underline;
+}
+
+/* Spinner */
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Install MetaMask prompt */
+.metamask-install {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.metamask-install img {
+    width: 80px;
+    margin-bottom: 20px;
+}
+
+.metamask-install h3 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.metamask-install p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.btn-install {
+    background: #f6851b;
+    color: #fff;
+}
+
+.btn-install:hover {
+    background: #e2761b;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .wallet-container {
+        padding: 20px 15px;
+    }
+
+    .wallet-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .balance-amount {
+        font-size: 2.5rem;
+    }
+
+    .goodies-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .wallet-status {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .wallet-address {
+        font-size: 0.85rem;
+    }
+}
+
+/* Row layout for cards */
+.wallet-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+    .wallet-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* No wallet state */
+.no-wallet-message {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+.no-wallet-message .mdi {
+    font-size: 4rem;
+    color: #ddd;
+    margin-bottom: 16px;
+    display: block;
+}

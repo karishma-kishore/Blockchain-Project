@@ -143,10 +143,73 @@ app.get('/api/sdc', (req, res) => {
     res.json(sdc);
 });
 
+// API: Claim SDC tokens (resets claimable balance)
+app.post('/api/claim', async (req, res) => {
+    const { walletAddress } = req.body;
+
+    if (!walletAddress) {
+        return res.status(400).json({ error: 'Wallet address required' });
+    }
+
+    const sdc = readJsonFile(sdcCoinsPath) || { claimable: 0, claims: [] };
+
+    if (sdc.claimable <= 0) {
+        return res.status(400).json({ error: 'No tokens to claim' });
+    }
+
+    const amountToClaim = sdc.claimable;
+
+    // For demo purposes, we simulate a successful claim
+    // In production, this would use ethers.js with a private key to send tokens
+    // Since we don't have access to the private key, we just reset the balance
+
+    // Reset claimable balance
+    sdc.claimable = 0;
+    sdc.claims = [];
+    sdc.lastClaim = {
+        walletAddress: walletAddress,
+        amount: amountToClaim,
+        date: new Date().toISOString()
+    };
+
+    if (!writeJsonFile(sdcCoinsPath, sdc)) {
+        return res.status(500).json({ error: 'Failed to update claim status' });
+    }
+
+    // Return success with a simulated tx hash
+    // In production, this would be the real transaction hash
+    const simulatedTxHash = '0x' + Array(64).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+
+    res.json({
+        success: true,
+        amount: amountToClaim,
+        txHash: simulatedTxHash,
+        message: `Claimed ${amountToClaim} SDC tokens (Demo mode - tokens would be sent in production)`
+    });
+});
+
+// API: Get goodies catalog
+app.get('/api/goodies', (req, res) => {
+    const goodies = [
+        { id: 'github-student', name: 'GitHub Student Developer Pack', cost: 50, category: 'Development' },
+        { id: 'jetbrains-license', name: 'JetBrains IDE License', cost: 100, category: 'Development' },
+        { id: 'coursera-course', name: 'Coursera Course Access', cost: 75, category: 'Learning' },
+        { id: 'linkedin-premium', name: 'LinkedIn Learning Premium', cost: 80, category: 'Career' },
+        { id: 'aws-credits', name: 'AWS Cloud Credits', cost: 60, category: 'Cloud' },
+        { id: 'figma-pro', name: 'Figma Pro Subscription', cost: 90, category: 'Design' }
+    ];
+    res.json(goodies);
+});
+
 // Routes
 
 app.get('/', (req, res) => {
     res.render('index');
+});
+
+// Wallet route
+app.get('/wallet', (req, res) => {
+    res.render('wallet');
 });
 
 app.get('/events', (req, res) => {
@@ -173,6 +236,7 @@ app.get('/rsvp_boot', (req, res) => {
 // .html Routes (Aliases)
 app.get('/index.html', (req, res) => res.render('index'));
 app.get('/home.html', (req, res) => res.render('home'));
+app.get('/wallet.html', (req, res) => res.render('wallet'));
 app.get('/events.html', (req, res) => res.render('events', { events: eventsData }));
 app.get('/rsvp.html', (req, res) => {
     let eventId = req.query.id;
@@ -197,3 +261,4 @@ const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
+

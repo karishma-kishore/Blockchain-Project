@@ -1,10 +1,9 @@
 {
-  "claimable": 20,
-  "claims": [
-    {
-      "eventId": "381401",
-      "amount": 20,
-      "date": "2025-12-09T17:45:19.090Z"
-    }
-  ]
+  "claimable": 0,
+  "claims": [],
+  "lastClaim": {
+    "walletAddress": "0xd9ec1ead6c3b698c790eb503f013d195603fbaf1",
+    "amount": 60,
+    "date": "2025-12-09T18:07:31.533Z"
+  }
 }
