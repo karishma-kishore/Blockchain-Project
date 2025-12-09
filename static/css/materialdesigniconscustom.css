@@ -1,9 +1,9 @@
 @font-face {
   font-family: 'materialdesigniconscustom';
   src:
-    url('../fonts/materialdesigniconscustom.ttf?rrudh1') format('truetype'),
-    url('../fonts/materialdesigniconscustom.woff?rrudh1') format('woff'),
-    url('../fonts/materialdesigniconscustom.svg?rrudh1#materialdesigniconscustom') format('svg');
+    url("/static/fonts/materialdesigniconscustom.ttf") format('truetype'),
+    url("/static/fonts/materialdesigniconscustom.woff") format('woff'),
+    url("/static/fonts/materialdesigniconscustom.svg") format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;

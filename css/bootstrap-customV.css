@@ -32,7 +32,7 @@
 		float: right;
 		width: 22px;
 		height: 22px;
-		background: url('../images/newhome/icons2.png') -114px -14px;
+		background: url("/images/newhome/icons2.png") -114px -14px;
 		margin: -5px -6px 0 0;
 		border-radius: 30px;
 		opacity: .70;
@@ -4212,7 +4212,7 @@
 	Plugin Documentation http://davidstutz.github.io/bootstrap-multiselect/
 \*-----------------------------------------------------*/
 	select {
-		background-image: url('../images/arrows/select.png') !important;
+		background-image: url("/images/arrows/select.png") !important;
 		background-position: right center !important;
 		background-repeat:no-repeat !important;
 		border-radius: 3px;
@@ -4256,7 +4256,7 @@
 
 	/** Select Multiple in Group Base Style **/
 	.select-group-justified > .select-group > .multiselect-native-select > .btn-group > .btn {
-		background-image: url('../images/arrows/select.png') !important;
+		background-image: url("/images/arrows/select.png") !important;
 		background-position: right center !important;
 		background-repeat: no-repeat !important;
 		border-radius: 0;
@@ -4436,7 +4436,7 @@
 
 	/** CSS for single_slection multiselect **/
 	span.multiselect-native-select > .btn-group > .btn {
-		background-image: url('../images/arrows/select.png') !important;
+		background-image: url("/images/arrows/select.png") !important;
 		background-position: right center !important;
 		background-repeat: no-repeat !important;
 		border-radius: 3px;
